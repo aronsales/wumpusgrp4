@@ -35,8 +35,9 @@
 
 wumpusworld(pit3, 4). %tipo, tamanho
 
-:- dynamic ([ljorge/1]).
-:- dynamic ([lmaria/1]).
+:- dynamic ([sentiburaco/1]).
+:- dynamic ([esbarrada/1]).
+:- dynamic ([sentiwumpus/1]).
 
 init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
     writeln('Agente Iniciado').
@@ -53,18 +54,25 @@ run_agent(Percepcao, Acao) :-
     writeln(Percepcao), % apague para limpar a saida. Coloque aqui seu codigo.
     cabeca_dura(Percepcao,Acao).
 
-ljorge([turnleft,turnleft,goforward]).
-cabeca_dura([no,yes,no,no,no], A) :- 
-    ljorge([A|J]),
-    retractall(ljorge(_)),
-    assert(ljorge(J)).
+sentiburaco([turnleft,turnleft,goforward,turnright,goforward]).
+cabeca_dura([_,yes,no,no,no], A) :- 
+    sentiburaco([A|S]),
+    retractall(sentiburaco(_)),
+    assert(sentiburaco(S)).
 
 cabeca_dura([no,no,no,no,no], goforward).
 cabeca_dura([yes,no,no,no,no], shoot).
-cabeca_dura([no,no,yes,no,no], grab).
+cabeca_dura([_,_,yes,_,_], grab).
+cabeca_dura([yes,yes,no,no,no], shoot).
 
-lmaria([turnright,goforward]).
+esbarrada([turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward]).
 cabeca_dura([no,no,no,yes,no], A) :-
-    lmaria([A,M]),
-    retractall(lmaria(_)),
-    assert(lmaria(M)).
+    esbarrada([A|E]),
+    assert(esbarrada(E)).
+
+sentiwumpus([turnleft,goforward]).
+cabeca_dura([yes,_,no,no,no], A) :-
+    sentiwumpus([A|W]),
+    retractall(sentiwumpus(_)),
+    assert(sentiwumpus(W)).
+
