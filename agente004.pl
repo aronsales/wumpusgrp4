@@ -42,7 +42,7 @@ init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um p
     writeln('Agente Iniciado').
 
 % esta funcao permanece a mesma. Nao altere.
-restart_agente:- 
+restart_agent:- 
 	init_agent.
 
 % esta e a funcao chamada pelo simulador. Nao altere a "cabeca" da funcao. Apenas o corpo.
