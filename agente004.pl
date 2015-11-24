@@ -29,12 +29,19 @@
 % Para rodar o exemplo, inicie o prolog com:
 % swipl -s agente007.pl
 % e faca a consulta (query) na forma:
-% ?- start.
+% ?- starti.
 
-:- load_files([wumpus1]).
+:- load_files([wumpus3]).
 
-init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
-	writeln('Agente iniciando...'). % apague esse writeln e coloque aqui as acoes para iniciar o agente
+wumpusworld(pit3, 4). %tipo, tamanho
+
+agentesperto([turnleft,turnleft,goforward,turnright,goforward]).
+
+init_agent :-% se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
+    retractall(agenteesperto(_)),
+	assert(agenteesperto([turnleft,turnleft,goforward,turnright,goforward])),
+    writeln('Agente iniciando...').% apague esse writeln e coloque aqui as acoes para iniciar o agente
+    
 
 % esta funcao permanece a mesma. Nao altere.
 restart_agent :- 
@@ -46,7 +53,13 @@ restart_agent :-
 run_agent(Percepcao, Acao) :-
   write('percebi: '), % pode apagar isso se desejar. Imprima somente o necessario.
   writeln(Percepcao), % apague para limpar a saida. Coloque aqui seu codigo.
-  cabeca_dura(_, Acao).
+  cabeca_dura(Percepcao, Acao).
 
-cabeca_dura(_, goforward). % "Inteligencia" do agente. Apague este exemplo e faca o seu.
+cabeca_dura([no,yes,no,no,no],A) :-
+    agenteesperto([A|F]),
+    retractall(agenteesperto(_)),
+    assert(agenteesperto(_)).
+
+cabeca_dura([no,no,no,no,no],goforward).
+
 
