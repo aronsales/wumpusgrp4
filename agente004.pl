@@ -42,8 +42,8 @@ init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um p
     writeln('Agente Iniciado').
 
 % esta funcao permanece a mesma. Nao altere.
-restart:- 
-	start.
+restart_agente:- 
+	init_agent.
 
 % esta e a funcao chamada pelo simulador. Nao altere a "cabeca" da funcao. Apenas o corpo.
 % Funcao recebe Percepcao, uma lista conforme descrito acima.
