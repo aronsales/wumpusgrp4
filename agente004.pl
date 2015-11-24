@@ -29,19 +29,17 @@
 % Para rodar o exemplo, inicie o prolog com:
 % swipl -s agente007.pl
 % e faca a consulta (query) na forma:
-% ?- starti.
+% ?- start
 
 :- load_files([wumpus3]).
 
 wumpusworld(pit3, 4). %tipo, tamanho
 
-agentesperto([turnleft,turnleft,goforward,turnright,goforward]).
+:- dynamic ([ljorge/1]).
+:- dynamic ([lmaria/1]).
 
-init_agent :-% se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
-    retractall(agenteesperto(_)),
-	assert(agenteesperto([turnleft,turnleft,goforward,turnright,goforward])),
-    writeln('Agente iniciando...').% apague esse writeln e coloque aqui as acoes para iniciar o agente
-    
+init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
+    writeln('Agente Iniciado').
 
 % esta funcao permanece a mesma. Nao altere.
 restart_agent :- 
@@ -51,15 +49,22 @@ restart_agent :-
 % Funcao recebe Percepcao, uma lista conforme descrito acima.
 % Deve retornar uma Acao, dentre as acoes validas descritas acima.
 run_agent(Percepcao, Acao) :-
-  write('percebi: '), % pode apagar isso se desejar. Imprima somente o necessario.
-  writeln(Percepcao), % apague para limpar a saida. Coloque aqui seu codigo.
-  cabeca_dura(Percepcao, Acao).
+    write('Percebi: '), % pode apagar isso se desejar. Imprima somente o necessario.
+    writeln(Percepcao), % apague para limpar a saida. Coloque aqui seu codigo.
+    cabeca_dura(Percepcao,Acao).
 
-cabeca_dura([no,yes,no,no,no],A) :-
-    agenteesperto([A|F]),
-    retractall(agenteesperto(_)),
-    assert(agenteesperto(_)).
+ljorge([turnleft,turnleft,goforward]).
+cabeca_dura([no,yes,no,no,no], A) :- 
+    ljorge([A|J]),
+    retractall(ljorge(_)),
+    assert(ljorge(J)).
 
-cabeca_dura([no,no,no,no,no],goforward).
+cabeca_dura([no,no,no,no,no], goforward).
+cabeca_dura([yes,no,no,no,no], shoot).
+cabeca_dura([no,no,yes,no,no], grab).
 
-
+lmaria([turnright,goforward]).
+cabeca_dura([no,no,no,yes,no], A) :-
+    lmaria([A,M]),
+    retractall(lmaria(_)),
+    assert(lmaria(M)).
