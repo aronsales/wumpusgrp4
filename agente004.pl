@@ -35,9 +35,7 @@
 
 wumpusworld(pit3, 4). %tipo, tamanho
 
-:- dynamic ([sentiburaco/1]).
-:- dynamic ([esbarrada/1]).
-:- dynamic ([sentiwumpus/1]).
+:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1]).
 
 init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
     writeln('Agente Iniciado').
