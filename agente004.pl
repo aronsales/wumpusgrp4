@@ -32,10 +32,8 @@
 % ?- start
 
 :- load_files([wumpus3]).
-
-wumpusworld(pit3, 4). %tipo, tamanho
-
 :- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1]).
+wumpusworld(pit3, 4). %tipo, tamanho
 
 init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
     writeln('Agente iniciado junto com as funcoes'),
