@@ -32,17 +32,19 @@
 % ?- start
 
 :- load_files([wumpus3]).
-:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1]).
+:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1,numeroflechas(X)]).
 wumpusworld(pit3, 4). %tipo, tamanho
 
 init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
-    writeln('Agente iniciado junto com as funcoes'),
+    writeln('Agente iniciado em conjunto com as funcoes'),
     retractall(sentiburaco(_)),
     assert(sentiburaco([turnleft,turnleft,goforward,turnright,goforward])),
     retractall(esbarrada(_)),
     assert(esbarrada([turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward])),
     retractall(sentiwumpus(_)),
-    assert(sentiwumpus([turnleft,goforward])).
+    assert(sentiwumpus([turnleft,goforward]))
+    retractall(numeroflechas(X)),
+    assert(numeroflechas(1)).
 
 
 % esta funcao permanece a mesma. Nao altere.
