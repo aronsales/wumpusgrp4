@@ -32,7 +32,7 @@
 % ?- start
 
 :- load_files([wumpus3]).
-:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1,numeroflechas(X)]).
+:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1,numeroflechas(X),minhafrente]).
 wumpusworld(pit3, 4). %tipo, tamanho
 
 init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
@@ -57,7 +57,8 @@ restart_agent:-
 run_agent(Percepcao, Acao) :-
     write('Percebi: '), % pode apagar isso se desejar. Imprima somente o necessario.
     writeln(Percepcao), % apague para limpar a saida. Coloque aqui seu codigo.
-    cabeca_dura(Percepcao,Acao).
+    cabeca_dura(Percepcao,Acao),
+    frente(Posicao,Posicao1).
 
 sentiburaco([turnleft,turnleft,goforward,turnright,goforward]).
 cabeca_dura([_,yes,no,no,no], A) :- 
@@ -80,4 +81,7 @@ cabeca_dura([yes,_,no,no,no], A) :-
     sentiwumpus([A|W]),
     retractall(sentiwumpus(_)),
     assert(sentiwumpus(W)).
+
+%frente([1,1], 0, [2,1]).
+    
 
