@@ -69,7 +69,7 @@ cabeca_dura([_,yes,no,no,no], A) :-
 cabeca_dura([no,no,no,no,no], goforward).
 cabeca_dura([yes,no,no,no,no], shoot).
 cabeca_dura([_,_,yes,_,_], grab).
-cabeca_dura([yes,yes,no,no,no], shoot).
+cabeca_dura([yes,_,_,_,_], shoot).
 
 esbarrada([turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward]).
 cabeca_dura([no,no,no,yes,no], A) :-
@@ -81,6 +81,12 @@ cabeca_dura([yes,_,no,no,no], A) :-
     sentiwumpus([A|W]),
     retractall(sentiwumpus(_)),
     assert(sentiwumpus(W)).
+
+%prox_casa([x,y],0)=[x+1,y]. movimento do agente para frente.
+%prox_casa([x,y],90)=[x,y+1]. movimento do agente para cima.
+%prox_casa([x,y],180)=[x-1,y]. movimento do agente para baixo.
+%prox_casa([x,y],270)=[x,y-1]. movimento do agente para tras.
+
 
 %frente([1,1], 0, [2,1]).
     
