@@ -32,13 +32,20 @@
 % ?- start
 
 :- load_files([wumpus3]).
-
+:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1,numeroflechas(X),minhafrente]).
 wumpusworld(pit3, 4). %tipo, tamanho
 
-:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1]).
-
 init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
-    writeln('Agente Iniciado').
+    writeln('Agente iniciado em conjunto com as funcoes'),
+    retractall(sentiburaco(_)),
+    assert(sentiburaco([turnleft,turnleft,goforward,turnright,goforward])),
+    retractall(esbarrada(_)),
+    assert(esbarrada([turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward])),
+    retractall(sentiwumpus(_)),
+    assert(sentiwumpus([turnleft,goforward]))
+    retractall(numeroflechas(X)),
+    assert(numeroflechas(1)).
+
 
 % esta funcao permanece a mesma. Nao altere.
 restart_agent:- 
@@ -50,7 +57,8 @@ restart_agent:-
 run_agent(Percepcao, Acao) :-
     write('Percebi: '), % pode apagar isso se desejar. Imprima somente o necessario.
     writeln(Percepcao), % apague para limpar a saida. Coloque aqui seu codigo.
-    cabeca_dura(Percepcao,Acao).
+    cabeca_dura(Percepcao,Acao),
+    frente(Posicao,Posicao1).
 
 sentiburaco([turnleft,turnleft,goforward,turnright,goforward]).
 cabeca_dura([_,yes,no,no,no], A) :- 
@@ -61,7 +69,7 @@ cabeca_dura([_,yes,no,no,no], A) :-
 cabeca_dura([no,no,no,no,no], goforward).
 cabeca_dura([yes,no,no,no,no], shoot).
 cabeca_dura([_,_,yes,_,_], grab).
-cabeca_dura([yes,yes,no,no,no], shoot).
+cabeca_dura([yes,_,_,_,_], shoot).
 
 esbarrada([turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward]).
 cabeca_dura([no,no,no,yes,no], A) :-
@@ -73,4 +81,13 @@ cabeca_dura([yes,_,no,no,no], A) :-
     sentiwumpus([A|W]),
     retractall(sentiwumpus(_)),
     assert(sentiwumpus(W)).
+
+%prox_casa([x,y],0)=[x+1,y]. movimento do agente para frente.
+%prox_casa([x,y],90)=[x,y+1]. movimento do agente para cima.
+%prox_casa([x,y],180)=[x-1,y]. movimento do agente para baixo.
+%prox_casa([x,y],270)=[x,y-1]. movimento do agente para tras.
+
+
+%frente([1,1], 0, [2,1]).
+    
 
