@@ -32,7 +32,7 @@
 % ?- start
 
 :- load_files([wumpus3]).
-:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1,numeroflechas(X),minhafrente]).
+:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1,numeroflechas(X),minhafrente,casas/1,casasvisitada/1,local_agente/1]).
 wumpusworld(pit3, 4). %tipo, tamanho
 
 init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
@@ -81,6 +81,10 @@ cabeca_dura([yes,_,no,no,no], A) :-
     sentiwumpus([A|W]),
     retractall(sentiwumpus(_)),
     assert(sentiwumpus(W)).
+
+%novolocal(NL) :-
+%   local_agente(LA),
+%    assert(local_agente(NL)).
 
 %prox_casa([x,y],0)=[x+1,y]. movimento do agente para frente.
 %prox_casa([x,y],90)=[x,y+1]. movimento do agente para cima.
