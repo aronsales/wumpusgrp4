@@ -79,8 +79,7 @@ cabeca_dura([_,yes,no,no,no], A) :-
     retractall(sentiburaco(_)),
     assert(sentiburaco(S)).
 cabeca_dura([no,no,no,no,no],goforward) :-
-    posicaonova,
-    sentidonovo.
+    posicaonova.
     
 cabeca_dura([_,_,yes,_,_], grab).
 cabeca_dura([yes,_,_,_,_], shoot).
@@ -98,23 +97,25 @@ cabeca_dura([yes,_,no,no,no], A) :-
     retractall(sentiwumpus(_)),
     assert(sentiwumpus(W)).
 
-sentidonovo :-
-    orientacao(O),
-    O1 is O+360,
-    retractall(orientacao(_)),
-    assert(orientacao(O1)).
+%sentidonovo :-
+%    orientacao(O),
+%    O1 is O+90,
+%    retractall(orientacao(_)),
+%    assert(orientacao(O1)).
 posicaonova :-
     casa([X,Y]),
     orientacao(O),
     O==0,
     Y1 is Y+1,
+    retractall(casa(_)),
     assert(casa([X,Y1])).
 posicaonova :-
     casa([X,Y]),
     orientacao(O),
-    O==360,
+    O==90,
     X1 is X+1,
-    asert(casa([X1,Y])).
+    retractall(casa(_)),
+    assert(casa([X1,Y])).
     
 
 
