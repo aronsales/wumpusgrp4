@@ -32,7 +32,7 @@
 % ?- start
 
 :- load_files([wumpus3]).
-:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1,numeroflechas(X),minhafrente,casas/1,casasvisitada/1,local_agente/1]).
+:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1,flechas/1,casa/1,orientacao/1]).
 wumpusworld(pit3, 4). %tipo, tamanho
 
 init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
@@ -43,8 +43,13 @@ init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um p
     assert(esbarrada([turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward])),
     retractall(sentiwumpus(_)),
     assert(sentiwumpus([turnleft,goforward])),
-    retractall(numeroflechas(X)),
-    assert(numeroflechas(1)).
+    %
+    retractall(flechas(_)),
+    assert(flechas(1)),
+    retractall(casa(_)),
+    assert(casa([1,1])),
+    retractall(orientacao(_)),
+    assert(orientacao(0)).
 
 
 % esta funcao permanece a mesma. Nao altere.
@@ -56,45 +61,57 @@ restart_agent:-
 % Deve retornar uma Acao, dentre as acoes validas descritas acima.
 run_agent(Percepcao, Acao) :-
     write('Percebi: '), % pode apagar isso se desejar. Imprima somente o necessario.
-    writeln(Percepcao), % apague para limpar a saida. Coloque aqui seu codigo.
-    numeroflechas(flecha),nl,
-    write('quantidade de flechas:'),
-    writeln(flecha),
-    cabeca_dura(Percepcao,Acao),
-    frente(Posicao,Posicao1).
+    writeln(Percepcao),% apague para limpar a saida. Coloque aqui seu codigo.
+    flechas(Flecha),
+    write('Quantidade de flechas: '),
+    writeln(Flecha),
+    casa(Posicao),
+    write('Casa atual: '),
+    writeln(Posicao),
+    orientacao(Sentido),
+    write('Meu sentido e: '),
+    writeln(Sentido),
+    cabeca_dura(Percepcao,Acao).
 
 sentiburaco([turnleft,turnleft,goforward,turnright,goforward]).
 cabeca_dura([_,yes,no,no,no], A) :- 
     sentiburaco([A|S]),
     retractall(sentiburaco(_)),
     assert(sentiburaco(S)).
-
-cabeca_dura([no,no,no,no,no],goforward).
-
+cabeca_dura([no,no,no,no,no],goforward) :-
+    novaposicao.
+    
 cabeca_dura([_,_,yes,_,_], grab).
-cabeca_dura([yes,_,_,_,_], shoot):-
-    numeroflechas(X),
-    X==1,
-    wumpus(alive),
-    fogo.
-
+cabeca_dura([yes,_,_,_,_], shoot).
+    %   numeroflechas(X),
+    % X==1,
+    %wumpus(alive),
+    %fogo.
 esbarrada([turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward]).
 cabeca_dura([no,no,no,yes,no], A) :-
     esbarrada([A|E]),
     assert(esbarrada(E)).
-
 sentiwumpus([turnleft,goforward]).
 cabeca_dura([yes,_,no,no,no], A) :-
     sentiwumpus([A|W]),
     retractall(sentiwumpus(_)),
     assert(sentiwumpus(W)).
 
-fogo:-
-    numeroflechas(X),
-    X>0,
-    X1 is X - 1,
-    retractall(numeroflechas(_)),
-    assert(numeroflechas(X1)).
+posicaonova :-
+    casa([X,Y]),
+    orientacao(O),
+    O==0,
+    Y1 is Y+1,
+    retractall(casa([_])),
+    assert(casa([X,Y1])).
+
+
+%fogo:-
+%   numeroflechas(X),
+%   X>0,
+%   X1 is X - 1,
+%   retractall(numeroflechas(_)),
+%    assert(numeroflechas(X1)).
 
 %novolocal(NL) :-
 %   local_agente(LA),
