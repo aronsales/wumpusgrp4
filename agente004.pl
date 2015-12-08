@@ -42,7 +42,7 @@ init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um p
     retractall(esbarrada(_)),
     assert(esbarrada([turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward])),
     retractall(sentiwumpus(_)),
-    assert(sentiwumpus([turnleft,goforward]))
+    assert(sentiwumpus([turnleft,goforward])),
     retractall(numeroflechas(X)),
     assert(numeroflechas(1)).
 
@@ -57,6 +57,9 @@ restart_agent:-
 run_agent(Percepcao, Acao) :-
     write('Percebi: '), % pode apagar isso se desejar. Imprima somente o necessario.
     writeln(Percepcao), % apague para limpar a saida. Coloque aqui seu codigo.
+    numeroflechas(flecha),nl,
+    write('quantidade de flechas:'),
+    writeln(flecha),
     cabeca_dura(Percepcao,Acao),
     frente(Posicao,Posicao1).
 
@@ -66,10 +69,14 @@ cabeca_dura([_,yes,no,no,no], A) :-
     retractall(sentiburaco(_)),
     assert(sentiburaco(S)).
 
-cabeca_dura([no,no,no,no,no], goforward).
-cabeca_dura([yes,no,no,no,no], shoot).
+cabeca_dura([no,no,no,no,no],goforward).
+
 cabeca_dura([_,_,yes,_,_], grab).
-cabeca_dura([yes,_,_,_,_], shoot).
+cabeca_dura([yes,_,_,_,_], shoot):-
+    numeroflechas(X),
+    X==1,
+    wumpus(alive),
+    fogo.
 
 esbarrada([turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward]).
 cabeca_dura([no,no,no,yes,no], A) :-
@@ -81,6 +88,13 @@ cabeca_dura([yes,_,no,no,no], A) :-
     sentiwumpus([A|W]),
     retractall(sentiwumpus(_)),
     assert(sentiwumpus(W)).
+
+fogo:-
+    numeroflechas(X),
+    X>0,
+    X1 is X - 1,
+    retractall(numeroflechas(_)),
+    assert(numeroflechas(X1)).
 
 %novolocal(NL) :-
 %   local_agente(LA),
