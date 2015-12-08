@@ -100,23 +100,21 @@ cabeca_dura([yes,_,no,no,no], A) :-
 
 sentidonovo :-
     orientacao(O),
-    O is O+360,
+    O1 is O+360,
     retractall(orientacao(_)),
-    assert(orientacao(O)).
+    assert(orientacao(O1)).
 posicaonova :-
     casa([X,Y]),
     orientacao(O),
     O==0,
-    Y is Y+1,
-    retractall(casa(_)),
-    assert(casa([X,Y])).
+    Y1 is Y+1,
+    assert(casa([X,Y1])).
 posicaonova :-
     casa([X,Y]),
     orientacao(O),
     O==360,
-    X is X+1,
-    retractall(casa(_)),
-    asert(casa([X,Y])).
+    X1 is X+1,
+    asert(casa([X1,Y])).
     
 
 
