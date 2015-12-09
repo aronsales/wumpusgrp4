@@ -32,7 +32,7 @@
 % ?- start
 
 :- load_files([wumpus3]).
-:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1,flechas/1,casa/1,orientacao/1,seguras/1]).
+:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1,flechas/1,casa/1,orientacao/1,seguras/1,frente]).
 wumpusworld(pit3, 4). %tipo, tamanho
 
 init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
@@ -51,7 +51,9 @@ init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um p
     retractall(orientacao(_)),
     assert(orientacao(0)),
     retractall(seguras),
-    assert(seguras([0,0]).
+    assert(seguras([0,0])),
+    retractall(frente),
+    assert(frente([0,1])).
 
 % esta funcao permanece a mesma. Nao altere.
 restart_agent:- 
@@ -75,7 +77,10 @@ run_agent(Percepcao, Acao) :-
     cabeca_dura(Percepcao,Acao),
     seguras(Casaseguras),
     write('Casas seguras: '),
-    writeln(Casaseguras).
+    writeln(Casaseguras),
+    frente(Casafrente),
+    write('A casa na minha frente e: '),
+    writeln(Casafrente).
 
 sentiburaco([turnleft,turnleft,goforward,turnright,goforward]).
 cabeca_dura([_,yes,no,no,no], A) :- 
