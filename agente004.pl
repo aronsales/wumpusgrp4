@@ -43,14 +43,15 @@ init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um p
     assert(esbarrada([turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward])),
     retractall(sentiwumpus(_)),
     assert(sentiwumpus([turnleft,goforward])),
-    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     retractall(flechas(_)),
     assert(flechas(1)),
     retractall(casa(_)),
     assert(casa([1,1])),
     retractall(orientacao(_)),
-    assert(orientacao(0)).
-
+    assert(orientacao(0)),
+    retractall(seguras),
+    assert(seguras([0,0]).
 
 % esta funcao permanece a mesma. Nao altere.
 restart_agent:- 
@@ -71,7 +72,10 @@ run_agent(Percepcao, Acao) :-
     orientacao(Sentido),
     write('Meu sentido e: '),
     writeln(Sentido),
-    cabeca_dura(Percepcao,Acao).
+    cabeca_dura(Percepcao,Acao),
+    seguras(Casaseguras),
+    write('Casas seguras: '),
+    writeln(Casaseguras).
 
 sentiburaco([turnleft,turnleft,goforward,turnright,goforward]).
 cabeca_dura([_,yes,no,no,no], A) :- 
@@ -92,7 +96,7 @@ cabeca_dura([yes,_,no,no,no], A) :-
     sentiwumpus([A|W]),
     retractall(sentiwumpus(_)),
     assert(sentiwumpus(W)).
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 posicaonova :-
     casa([X,Y]),
     orientacao(O),
@@ -121,6 +125,31 @@ posicaonova :-
     X1 is X-1,
     retractall(casa(_)),
     assert(casa([X1,Y])).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+sentidonovo :-
+    orientacao(O),
+    O==0,
+    O1 is O+90,
+    retractall(orientacao(_)),
+    assert(orientacao(O1)).
+sentidonovo :-
+    orientacao(O),
+    O==90,
+    O1 is O+90,
+    retractall(orientacao(_)),
+    assert(orientacao(O1)).
+sentidonovo :-
+    orientacao(O),
+    O==180,
+    O1 is O+90,
+    retractall(orientacao(_)),
+    assert(orientacao(O1)).
+sentidonovo :-
+    orientacao(O),
+    O==180,
+    O1 is O-270,
+    retractall(orientacao(_)),
+    assert(orientacao(O1)).
 
     
 
