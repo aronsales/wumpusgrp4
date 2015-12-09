@@ -80,28 +80,19 @@ cabeca_dura([_,yes,no,no,no], A) :-
     assert(sentiburaco(S)).
 cabeca_dura([no,no,no,no,no],goforward) :-
     posicaonova.
-    
 cabeca_dura([_,_,yes,_,_], grab).
 cabeca_dura([yes,_,_,_,_], shoot).
-    %   numeroflechas(X),
-    % X==1,
-    %wumpus(alive),
-    %fogo.
-esbarrada([turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward]).
+
+esbarrada([turnright,goforward]).
 cabeca_dura([no,no,no,yes,no], A) :-
     esbarrada([A|E]),
     assert(esbarrada(E)).
-sentiwumpus([turnleft,goforward]).
+sentiwumpus([turnleft,turnleft,goforward]).
 cabeca_dura([yes,_,no,no,no], A) :-
     sentiwumpus([A|W]),
     retractall(sentiwumpus(_)),
     assert(sentiwumpus(W)).
 
-%sentidonovo :-
-%    orientacao(O),
-%    O1 is O+90,
-%    retractall(orientacao(_)),
-%    assert(orientacao(O1)).
 posicaonova :-
     casa([X,Y]),
     orientacao(O),
@@ -116,6 +107,21 @@ posicaonova :-
     X1 is X+1,
     retractall(casa(_)),
     assert(casa([X1,Y])).
+posicaonova :-
+    casa([X,Y]),
+    orientacao(O),
+    O==180,
+    Y1 is Y-1,
+    retractall(casa(_)),
+    assert(casa([X,Y1])).
+posicaonova :-
+    casa([X,Y]),
+    orientacao(O),
+    O==270,
+    X1 is X-1,
+    retractall(casa(_)),
+    assert(casa([X1,Y])).
+
     
 
 
