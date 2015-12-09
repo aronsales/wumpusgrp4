@@ -32,7 +32,7 @@
 % ?- start
 
 :- load_files([wumpus3]).
-:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1,flechas/1,casa/1,orientacao/1]).
+:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1,flechas/1,casa/1,orientacao/1,seguras/1]).
 wumpusworld(pit3, 4). %tipo, tamanho
 
 init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
