@@ -88,7 +88,8 @@ cabeca_dura([_,yes,no,no,no], A) :-
     retractall(sentiburaco(_)),
     assert(sentiburaco(S)).
 cabeca_dura([no,no,no,no,no],goforward) :-
-    posicaonova.
+    posicaonova,
+    casafrente.
 cabeca_dura([_,_,yes,_,_], grab).
 cabeca_dura([yes,_,_,_,_], shoot).
 
@@ -113,7 +114,7 @@ posicaonova :-
     casa([X,Y]),
     orientacao(O),
     O==90,
-    X1 is X+1,
+    X1 is X-11,
     retractall(casa(_)),
     assert(casa([X1,Y])).
 posicaonova :-
@@ -127,7 +128,7 @@ posicaonova :-
     casa([X,Y]),
     orientacao(O),
     O==270,
-    X1 is X-1,
+    X1 is X+1,
     retractall(casa(_)),
     assert(casa([X1,Y])).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -155,6 +156,39 @@ sentidonovo :-
     O1 is O-270,
     retractall(orientacao(_)),
     assert(orientacao(O1)).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+casafrente :-
+    casa([X,Y]),
+    orientacao(O),
+    O==0,
+    Y1 is Y+1,
+    retractall(frente(_)),
+    assert(frente([X,Y1])).
+casafrente :-
+    casa([X,Y]),
+    orientacao(O),
+    O==90,
+    X1 is X-1,
+    retractall(frente(_)),
+    assert(frente([X1,Y])).
+casafrente :-
+    casa([X,Y]),
+    orientacao(O),
+    O==180,
+    Y1 is Y-1,
+    retractall(frente(_)),
+    assert(frente([X,Y1])).
+casafrente :-
+    casa([X,Y]),
+    orientacao(O),
+    O==270,
+    X1 is X+1,
+    retractall(frente(_)),
+    assert(frente([X1,Y])).
+
+
+
+
 
     
 
