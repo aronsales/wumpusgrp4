@@ -149,6 +149,27 @@ casa_segura([no,no,_,_,_]) :- %cima
     append(A,[[Z,Y]], D),
     retractall(casas_seguras(_)),
     assert(casas_seguras(D)).
-    
+
+casa_segura([no,no,_,_,_]) :- %esquerda
+    casas_seguras(A),
+    posicao(Z,B),
+    orientacao(180),
+    X is Z - 1,
+    Z > 1,
+    not(member([X,B],A)),
+    append(A,[[X,B]],C),
+    retractall(casas_seguras(_)),
+    assert(casas_seguras(C)).
+
+casa_segura([no,no,_,_,_]) :- %baixo
+    casas_seguras(A),
+    posicao(Z,B),
+    orientacao(270),
+    Y is B - 1,
+    B > 1,
+    not(member([Z,Y],A)),
+    append(A,[[Z,Y]],D),
+    retractall(casas_seguras(_)),
+    assert(casas_seguras(D)).
     
 
