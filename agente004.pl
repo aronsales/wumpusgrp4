@@ -107,30 +107,30 @@ posicaonova :-
     casa([X,Y]),
     orientacao(O),
     O==0,
-    Y1 is Y+1,
-    retractall(casa(_)),
-    assert(casa([X,Y1])).
-posicaonova :-
-    casa([X,Y]),
-    orientacao(O),
-    O==90,
-    X1 is X-11,
+    X1 is X+1,
     retractall(casa(_)),
     assert(casa([X1,Y])).
 posicaonova :-
     casa([X,Y]),
     orientacao(O),
-    O==180,
+    O==90,
     Y1 is Y-1,
     retractall(casa(_)),
     assert(casa([X,Y1])).
 posicaonova :-
     casa([X,Y]),
     orientacao(O),
-    O==270,
-    X1 is X+1,
+    O==180,
+    X1 is X-1,
     retractall(casa(_)),
     assert(casa([X1,Y])).
+posicaonova :-
+    casa([X,Y]),
+    orientacao(O),
+    O==270,
+    Y1 is Y+1,
+    retractall(casa(_)),
+    assert(casa([X,Y1])).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 sentidonovo :-
     orientacao(O),
@@ -161,30 +161,33 @@ casafrente :-
     casa([X,Y]),
     orientacao(O),
     O==0,
-    Y1 is Y+1,
-    retractall(frente(_)),
-    assert(frente([X,Y1])).
-casafrente :-
-    casa([X,Y]),
-    orientacao(O),
-    O==90,
-    X1 is X-1,
+    X1 is X+1,
     retractall(frente(_)),
     assert(frente([X1,Y])).
 casafrente :-
     casa([X,Y]),
     orientacao(O),
-    O==180,
+    O==90,
     Y1 is Y-1,
     retractall(frente(_)),
     assert(frente([X,Y1])).
 casafrente :-
     casa([X,Y]),
     orientacao(O),
-    O==270,
-    X1 is X+1,
+    O==180,
+    X1 is X-1,
     retractall(frente(_)),
     assert(frente([X1,Y])).
+casafrente :-
+    casa([X,Y]),
+    orientacao(O),
+    O==270,
+    Y1 is Y+1,
+    retractall(frente(_)),
+    assert(frente([X,Y1])).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+casasegura :-
+
 
 
 
