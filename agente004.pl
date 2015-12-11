@@ -73,12 +73,16 @@ run_agent(P,_):-
     casas_visitadas(I),
     write('Casas Visitadas :'),
     writeln(I),
-    casa_segura(P).
+    casa_segura(P),
+    andarfrente(P,_).
 
 ouro([_,_,yes,_,_], grab).
 sair(_, climb) :- 
     posicao(1,1),
     casas_seguras([]).
+
+%andarfrente([no,no,no,no,no], goforward).
+andarlado([no,yes,no,no,no], turnright).
 
 virare :- %virar esquerda
     orientacao(A),
