@@ -10,7 +10,16 @@
 % initialize(random,Percept) to initialize(fig62,Percept) in the
 % navigate(Actions,Score,Time) procedure in file navigate.pl and then run
 % navigate(Actions,Score,Time).
-
+%   init_agent
+%   restart_agent
+%   run_agent
+%
+% Currently set up to solve the wumpus world in Figure 6.2 of Russell and
+% Norvig.  You can enforce generation of this world by changing the
+% initialize(random,Percept) to initialize(fig62,Percept) in the
+% navigate(Actions,Score,Time) procedure in file navigate.pl and then run
+% navigate(Actions,Score,Time).
+%
 % Lista de Percepcao: [Stench,Breeze,Glitter,Bump,Scream]
 % Traducao: [Fedor,Vento,Brilho,Trombada,Grito]
 % Acoes possiveis:
@@ -20,68 +29,151 @@
 % grab - pegar o ouro
 % climb - sair da caverna
 % shoot - atirar a flecha
-
+%
 % Copie wumpus1.pl e agenteXX.pl onde XX eh o numero do seu agente (do grupo)
 % para a pasta rascunhos e depois de pronto para trabalhos
-% Todos do grupo devem copiar para sua pasta trabalhos, 
+% Todos do grupo devem copiar para sua pasta trabalhos,
 % com o mesmo NUMERO, o arquivo identico.
-
+%
 % Para rodar o exemplo, inicie o prolog com:
 % swipl -s agente007.pl
 % e faca a consulta (query) na forma:
 % ?- start
 
 :- load_files([wumpus3]).
-:- dynamic ([sentiburaco/1,esbarrada/1,sentiwumpus/1,numeroflechas(X),minhafrente]).
+:- dynamic([orientcao/1,posicao/2,volta/1, casas_seguras/1,casas_perigosas/1, casas_visitadas/1]).
 wumpusworld(pit3, 4). %tipo, tamanho
 
-init_agent :- % se nao tiver nada para fazer aqui, simplesmente termine com um ponto (.)
-    writeln('Agente iniciado em conjunto com as funcoes'),
-    retractall(sentiburaco(_)),
-    assert(sentiburaco([turnleft,turnleft,goforward,turnright,goforward])),
-    retractall(esbarrada(_)),
-    assert(esbarrada([turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward])),
-    retractall(sentiwumpus(_)),
-    assert(sentiwumpus([turnleft,goforward]))
-    retractall(numeroflechas(X)),
-    assert(numeroflechas(1)).
+init_agent:-
+    retractall(orientancao(_)),
+    retractall(posicao(,)),
+    retractall(volta(_)),
+    retractall(casas_seguras(_)),
+    retractall(casas_perigosas(_)),
+    retractall(casas_visitadas(_)),
+    assert(orientacao( 0 )),
+    assert(posicao(1,1)),
+    assert(volta( 0 )),
+    assert(casas_seguras([])),
+    assert(casas_perigosas([])),
+    assert(casas_visitadas([])).
 
+restart_agent:-
+    init_agent.
 
-% esta funcao permanece a mesma. Nao altere.
-restart_agent:- 
-	init_agent.
+run_agent(P,_):-
+    write('Percebi: '),
+    writeln( P ),
+    casas_seguras( X ),
+    write('Casas Seguras :'),
+    writeln( X ),
+    casas_perigosas( Z ),
+    write('Casas Perigosas: '),
+    writeln( Z ),
+    casas_visitadas(I),
+    write('Casas Visitadas :'),
+    writeln(I),
+    casa_segura(P),
+    andarfrente(P,_).
 
-% esta e a funcao chamada pelo simulador. Nao altere a "cabeca" da funcao. Apenas o corpo.
-% Funcao recebe Percepcao, uma lista conforme descrito acima.
-% Deve retornar uma Acao, dentre as acoes validas descritas acima.
-run_agent(Percepcao, Acao) :-
-    write('Percebi: '), % pode apagar isso se desejar. Imprima somente o necessario.
-    writeln(Percepcao), % apague para limpar a saida. Coloque aqui seu codigo.
-    cabeca_dura(Percepcao,Acao),
-    frente(Posicao,Posicao1).
+ouro([_,_,yes,_,_], grab).
+sair(_, climb) :- 
+    posicao(1,1),
+    casas_seguras([]).
 
-sentiburaco([turnleft,turnleft,goforward,turnright,goforward]).
-cabeca_dura([_,yes,no,no,no], A) :- 
-    sentiburaco([A|S]),
-    retractall(sentiburaco(_)),
-    assert(sentiburaco(S)).
+%andarfrente([no,no,no,no,no], goforward).
+andarlado([no,yes,no,no,no], turnright).
 
-cabeca_dura([no,no,no,no,no], goforward).
-cabeca_dura([yes,no,no,no,no], shoot).
-cabeca_dura([_,_,yes,_,_], grab).
-cabeca_dura([yes,yes,no,no,no], shoot).
+virare :- %virar esquerda
+    orientacao(A),
+    B is A + 90,
+    C is B mod 360,
+    retractall(orientacao(_)),
+    assert(orientacao(C)).
 
-esbarrada([turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward,turnright,goforward]).
-cabeca_dura([no,no,no,yes,no], A) :-
-    esbarrada([A|E]),
-    assert(esbarrada(E)).
+virad :- %virar direita
+    orientacao(A),
+    B is A - 90,
+    C is B mod 360,
+    retractall(orientacao(_)),
+    assert(orientacao(C)).
 
-sentiwumpus([turnleft,goforward]).
-cabeca_dura([yes,_,no,no,no], A) :-
-    sentiwumpus([A|W]),
-    retractall(sentiwumpus(_)),
-    assert(sentiwumpus(W)).
+local_agent :- %andar frente direita
+    orientacao(0),
+    posicao(X,Y),
+    Z is X + 1,
+    X < 4,
+    retractall(posicao(_,_)),
+    assert(posicao(Z,Y)).
 
-%frente([1,1], 0, [2,1]).
+local_agent :- %andar cima
+    orientacao(90),
+    posicao(X,Y),
+    Z is Y + 1,
+    Y < 4,
+    retractall(posicao(_,_)),
+    assert(posicao(X,Z)).
+
+local_agent :- %andar tras esquerda
+    orientacao(180),
+    posicao(X,Y),
+    Z is X - 1,
+    X  >  1,
+    retractall(posicao(_,_)),
+    assert(posicao(Z,Y)).
+
+local_agent :- %andar baixo
+    orientacao(270),
+    posicao(X,Y),
+    Z is Y - 1,
+    Y  >  1,
+    retractall(posicao(_,_)),
+    assert(posicao(X,Z)).
+
+local_agent.
+
+casa_segura([no,no,_,_,_]) :- %direita
+    casas_seguras(A),
+    posicao(Z,B),
+    orientacao(0),
+    X is Z + 1,
+    Z < 4,
+    not(member([X,B], A)),
+    append(A,[[X,B]], C),
+    retractall(casas_seguras(_)),
+    assert(casas_seguras(C)).
+
+casa_segura([no,no,_,_,_]) :- %cima
+    casas_seguras(A),
+    posicao(Z,B),
+    orientacao(90),
+    Y is B + 1,
+    B < 4,
+    not(member([Z,Y], A)),
+    append(A,[[Z,Y]], D),
+    retractall(casas_seguras(_)),
+    assert(casas_seguras(D)).
+
+casa_segura([no,no,_,_,_]) :- %esquerda
+    casas_seguras(A),
+    posicao(Z,B),
+    orientacao(180),
+    X is Z - 1,
+    Z > 1,
+    not(member([X,B],A)),
+    append(A,[[X,B]],C),
+    retractall(casas_seguras(_)),
+    assert(casas_seguras(C)).
+
+casa_segura([no,no,_,_,_]) :- %baixo
+    casas_seguras(A),
+    posicao(Z,B),
+    orientacao(270),
+    Y is B - 1,
+    B > 1,
+    not(member([Z,Y],A)),
+    append(A,[[Z,Y]],D),
+    retractall(casas_seguras(_)),
+    assert(casas_seguras(D)).
     
 
