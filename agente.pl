@@ -74,7 +74,7 @@ run_agent(P,_):-
     write('Casas Visitadas :'),
     writeln(I),
     casa_segura(P).
-
+run_agent([no,no,no,no,no], goforward).
 ouro([_,_,yes,_,_], grab).
 sair(_, climb) :- 
     posicao(1,1),
@@ -149,6 +149,5 @@ casa_segura([no,no,_,_,_]) :- %cima
     append(A,[[Z,Y]], D),
     retractall(casas_seguras(_)),
     assert(casas_seguras(D)).
-    
     
 
