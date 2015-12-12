@@ -46,7 +46,7 @@ wumpusworld(pit3, 4). %tipo, tamanho
 
 init_agent:-
     retractall(orientancao(_)),
-    retractall(posicao(,)),
+    retractall(posicao(_)),
     retractall(volta(_)),
     retractall(casas_seguras(_)),
     retractall(casas_perigosas(_)),
