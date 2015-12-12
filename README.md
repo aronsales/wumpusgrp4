@@ -3,7 +3,7 @@ Repositório criado para desenvolvimento do wumpus.
 
 Autores.
 
-Antonio Francelino (antoniofrancelinoneto@hotmail.com)
+Antonio Francelino (antoniofrancelinoneto2@hotmail.com)
 
 Aron Sales Monteiro (aronmonteiro@gmail.com)
 
