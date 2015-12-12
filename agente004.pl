@@ -81,10 +81,10 @@ sair(_, climb) :-
     posicao(1,1),
     casas_seguras([]).
 
-%andarfrente([no,no,no,no,no], goforward).
+andarfrente([no,no,no,no,no], goforward).
 andarlado([no,yes,no,no,no], turnright).
 
-virare :- %virar esquerda
+virae :- %virar esquerda
     orientacao(A),
     B is A + 90,
     C is B mod 360,
