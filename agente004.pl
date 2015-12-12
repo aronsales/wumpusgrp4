@@ -41,12 +41,12 @@
 % ?- start
 
 :- load_files([wumpus3]).
-:- dynamic([orientcao/1,posicao/2,volta/1, casas_seguras/1,casas_perigosas/1, casas_visitadas/1]).
+:- dynamic([orientacao/1,posicao/2,volta/1, casas_seguras/1,casas_perigosas/1, casas_visitadas/1]).
 wumpusworld(pit3, 4). %tipo, tamanho
 
 init_agent:-
-    retractall(orientancao(_)),
-    retractall(posicao(_)),
+    retractall(orientacao(_)),
+    retractall(posicao(_,_)),
     retractall(volta(_)),
     retractall(casas_seguras(_)),
     retractall(casas_perigosas(_)),
@@ -132,7 +132,7 @@ local_agent :- %andar baixo
 
 local_agent.
 
-casa_segura([no,no,_,_,_]) :- %direita
+casa_segura([_,_,_,_,_]) :- %direita
     casas_seguras(A),
     posicao(Z,B),
     orientacao(0),
