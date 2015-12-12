@@ -54,9 +54,9 @@ init_agent:-
     assert(orientacao( 0 )),
     assert(posicao(1,1)),
     assert(volta( 0 )),
-    assert(casas_seguras([])),
+    assert(casas_seguras([1,1])),
     assert(casas_perigosas([])),
-    assert(casas_visitadas([])).
+    assert(casas_visitadas([1,1])).
 
 restart_agent:-
     init_agent.
