@@ -4,11 +4,13 @@
             volta/1,
             casas_seguras/1,
             casas_perigosas/1,
-            casas_visitadas/1]).
+            casas_visitadas/1,
+            senti_buraco/1]).
 
 wumpusworld(pit3, 4). %tipo, tamanho
 
 init_agent:-
+    retractall(senti_buraco(_)), %variavel pra guardar a lista de ações caso sinta uma brisa
     retractall(orientacao(_)),
     retractall(posicao(_,_)),
     retractall(volta(_)),
@@ -20,7 +22,8 @@ init_agent:-
     assert(volta( 0 )),
     assert(casas_seguras([])),
     assert(casas_perigosas([])),
-    assert(casas_visitadas([])).
+    assert(casas_visitadas([])),
+    assert(senti_buraco([turnleft,turnleft,goforward])). %ações pra executar caso sinta uma brisa
 
 restart_agent:-
     init_agent.
@@ -44,14 +47,17 @@ run_agent(P,A):-
     traz(P),
     baixo(P),
     ouro(P,A);
-    cabeca_dura(P,A).
+    agente_movimento(P,A).
 
 ouro([_,_,yes,_,_], grab).
 vazei(_, climb) :- 
    posicao(1,1).
    /*casas_seguras([]).*/
-
-cabeca_dura(_,goforward).
+agente_movimento([no,no,no,no,no],goforward).
+agente_movimento([no,yes,no,no,no], A) :-
+    senti_buraco([A|S]), %Coloca o A(Acao) como cabeça da lista
+    retractall(senti_buraco(_)), %Limpa a variavel
+    assert(senti_buraco(S)). %Declara a variavel como a cauda da lista
 
 virae :- %virar esquerda
     orientacao(A),
