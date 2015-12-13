@@ -13,6 +13,7 @@ wumpusworld(pit3, 4). %tipo, tamanho
 init_agent:-
     retractall(esbarrada(_)), %variavel pra guardar a lista de açoes caso esbarre
     retractall(senti_buraco(_)), %variavel pra guardar a lista de ações caso sinta uma brisa
+    retractall(senti_wumpus(_)),
     retractall(orientacao(_)),
     retractall(posicao(_,_)),
     retractall(volta(_)),
@@ -26,7 +27,8 @@ init_agent:-
     assert(casas_perigosas([])),
     assert(casas_visitadas([])),
     assert(senti_buraco([turnleft,turnleft,goforward])), %ações pra executar caso sinta uma brisa
-    assert(esbarrada([turnleft,turnleft,goforward])). %ações para executar caso esbarre
+    assert(senti_wumpus([turnleft,turnleft,goforward])), %ações pra executar caso sinta fedor
+    assert(esbarrada([turnright])). %ações para executar caso esbarre
 
 restart_agent:-
     init_agent.
@@ -64,13 +66,18 @@ agente_movimento([no,yes,no,no,no], A) :-
     senti_buraco([A|S]), %Coloca o A(Acao) como cabeça da lista
     retractall(senti_buraco(_)), %Limpa a variavel
     assert(senti_buraco(S)). %Declara a variavel como a cauda da lista
+   
+agente_movimento([yes,_,_,_,_], A):- %ao senti um fedor andara uma cassa para trás
+    senti_wumpus([A|S]),
+    retractall(senti_wumpus(_)),
+    assert(senti_wumpus(S)).
 
-agente_movimento([yes,_,_,_,_], shoot). %ao senti um fedor atira
-
-agente_movimento([_,_,_,yes,_], A) :- %ao esbarrar andará uma casa para trás
+agente_movimento([_,_,_,yes,_], A) :- %ao esbarrar mudará sua direcao para direita
     esbarrada([A|S]),
     retractall(esbarrada(_)),
     assert(esbarrada(S)).
+
+agente_movimento([_,_,yes,_,_],grab).
 
 virae :- %virar esquerda
     orientacao(A),
