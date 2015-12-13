@@ -50,14 +50,19 @@ run_agent(P,A):-
     agente_movimento(P,A).
 
 ouro([_,_,yes,_,_], grab).
+
 vazei(_, climb) :- 
    posicao(1,1).
    /*casas_seguras([]).*/
+
 agente_movimento([no,no,no,no,no],goforward).
+
 agente_movimento([no,yes,no,no,no], A) :-
     senti_buraco([A|S]), %Coloca o A(Acao) como cabeça da lista
     retractall(senti_buraco(_)), %Limpa a variavel
     assert(senti_buraco(S)). %Declara a variavel como a cauda da lista
+
+agente_movimento([yes,_,_,_,_], shoot). %ao senti um fedor atira
 
 virae :- %virar esquerda
     orientacao(A),
