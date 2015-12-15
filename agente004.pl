@@ -1,3 +1,36 @@
+%  Some simple test agents.
+% 
+%  To define an agent within the navigate.pl scenario, define:
+%    init_agent
+%    restart_agent
+%    run_agent
+% 
+%  Currently set up to solve the wumpus world in Figure 6.2 of Russell and
+%  Norvig.  You can enforce generation of this world by changing the
+%  initialize(random,Percept) to initialize(fig62,Percept) in the
+%  navigate(Actions,Score,Time) procedure in file navigate.pl and then run
+%  navigate(Actions,Score,Time).
+%
+%  Lista de Percepcao: [Stench,Breeze,Glitter,Bump,Scream]
+%  Traducao: [Fedor,Vento,Brilho,Trombada,Grito]
+%  Acoes possiveis:
+%  goforward - andar
+%  turnright - girar sentido horario
+%  turnleft - girar sentido anti-horario
+%  grab - pegar o ouro
+%  climb - sair da caverna
+%  shoot - atirar a flecha
+%
+%  Copie wumpus1.pl e agenteXX.pl onde XX eh o numero do seu agente (do grupo)
+%  para a pasta rascunhos e depois de pronto para trabalhos
+%  Todos do grupo devem copiar para sua pasta trabalhos, 
+%  com o mesmo NUMERO, o arquivo identico.
+%
+%  Para rodar o exemplo, inicie o prolog com:
+%  swipl -s agente007.pl
+%  e faca a consulta (query) na forma:
+%  ?- start.
+ 
 :- load_files([wumpus3]).
 :- dynamic([orientacao/1,
             posicao/2,
