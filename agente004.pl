@@ -53,6 +53,8 @@ init_agent:-
     retractall(casas_seguras(_)),
     retractall(casas_perigosas(_)),
     retractall(casas_visitadas(_)),
+    retractall(ouro(_)),
+    assert(ouro(0)),
     assert(orientacao( 0 )),
     assert(posicao(1,1)),
     assert(volta( 0 )),
@@ -64,7 +66,7 @@ init_agent:-
     assert(esbarrada([turnright])). %ações para executar caso esbarre
 
 restart_agent:-
-    init_agent.
+   init_agent.
 
 run_agent(P,A):-
     write('Percebi: '),
@@ -87,23 +89,21 @@ run_agent(P,A):-
     ouro(P,A);
     agente_movimento(P,A).
 
-ouro([_,_,yes,_,_], grab).
+%ouro([_,_,yes,_,_], grab).
 
-vazei(_, climb) :- 
-   posicao(1,1).
-   /*casas_seguras([]).*/
-
+   casas_seguras([]).
+    
 agente_movimento([no,no,no,no,no],goforward).
 
 agente_movimento([no,yes,no,no,no], A) :-
-    senti_buraco([A|S]), %Coloca o A(Acao) como cabeça da lista
-    retractall(senti_buraco(_)), %Limpa a variavel
+   senti_buraco([A|S]), %Coloca o A(Acao) como cabeça da lista
+   retractall(senti_buraco(_)), %Limpa a variavel
     assert(senti_buraco(S)). %Declara a variavel como a cauda da lista
    
 agente_movimento([yes,_,_,_,_], A):- %ao senti um fedor andara uma cassa para trás
     senti_wumpus([A|S]),
-    retractall(senti_wumpus(_)),
-    assert(senti_wumpus(S)).
+   retractall(senti_wumpus(_)),
+   assert(senti_wumpus(S)).
 
 agente_movimento([_,_,_,yes,_], A) :- %ao esbarrar mudará sua direcao para direita
     esbarrada([A|S]),
@@ -212,9 +212,26 @@ verificar([no,no,_,_,_]):-
     frente(P),cima(P),traz(P),baixo(P),write('Verificacao concluida').
 
 visitadas:-
-    casas_visitadas(A),
-    posicao(X,Y),
-    delete(A,[X,Y],C),
-    append(C,[[X,Y]],B),
-    retractall(casas_visitadas(_)),
-    assert(casas_visitadas(B)).
+   casas_visitadas(A),
+   posicao(X,Y),
+   delete(A,[X,Y],C),
+   append(C,[[X,Y]],B),
+   retractall(casas_visitadas(_)),
+   assert(casas_visitadas(B)).
+
+%perigosas_S:-
+%   casas_perigosas(A),
+%   posicao(X,Y),
+%   delete(A,[X,Y],C),
+%   append(C,[[X,Y]],B),
+%   retractall(casas_perigosas(_)),
+%   assert(casas_perigosas(B)).
+
+%perigosas_B:-
+%   casas_perigosas(A),
+%   posicao(X,Y),
+%   delete(A,[X,Y],C),
+%   append(C,[[X,Y]],B),
+%   retractall(casas_perigosas(_)),
+%   assert(casas_perigosas(B)).
+
