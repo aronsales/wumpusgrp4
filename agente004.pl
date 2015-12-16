@@ -35,6 +35,7 @@
 :- dynamic([orientacao/1,
             posicao/2,
             volta/1,
+            flecha/1,
             casas_seguras/1,
             casas_perigosas/1,
             casas_visitadas/1,
@@ -62,7 +63,7 @@ init_agent:-
     assert(casas_perigosas([])),
     assert(casas_visitadas([])),
     assert(senti_buraco([turnleft,turnleft,goforward])), %ações pra executar caso sinta uma brisa
-    assert(senti_wumpus([turnleft,turnleft,goforward])), %ações pra executar caso sinta fedor
+    assert(senti_wumpus([shoot,turnleft,turnleft,goforward])), %ações pra executar caso sinta fedor
     assert(esbarrada([turnright])). %ações para executar caso esbarre
 
 restart_agent:-
@@ -111,6 +112,13 @@ agente_movimento([_,_,_,yes,_], A) :- %ao esbarrar mudará sua direcao para dire
     assert(esbarrada(S)).
 
 agente_movimento([_,_,yes,_,_],grab).
+
+flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
+    flecha(X),
+    X > 0,
+    Z is X - 1,
+    retractall(flecha(_)),
+    assert(flecha(Z)).
 
 virae :- %virar esquerda
     orientacao(A),
