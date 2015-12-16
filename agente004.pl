@@ -35,7 +35,7 @@
 :- dynamic([orientacao/1,
             posicao/2,
             volta/1,
-            flecha/1,
+            %flecha/1,
             casas_seguras/1,
             casas_perigosas/1,
             casas_visitadas/1,
@@ -54,8 +54,6 @@ init_agent:-
     retractall(casas_seguras(_)),
     retractall(casas_perigosas(_)),
     retractall(casas_visitadas(_)),
-    retractall(ouro(_)),
-    assert(ouro(0)),
     assert(orientacao( 0 )),
     assert(posicao(1,1)),
     assert(volta( 0 )),
@@ -73,26 +71,25 @@ run_agent(P,A):-
     write('Percebi: '),
     writeln( P ),
     casas_seguras( X ),
-    write('Casas Seguras :'),
+    write('Casas Seguras: '),
     writeln( X ),
     casas_perigosas( Z ),
     write('Casas Perigosas: '),
     writeln( Z ),
     casas_visitadas(I),
-    write('Casas Visitadas :'),
+    write('Casas Visitadas: '),
     writeln(I),
-    visitadas,
-    local_agent,
+    local_agent(A),
     frente(P),
     cima(P),
     traz(P),
     baixo(P),
     ouro(P,A);
-    agente_movimento(P,A).
+    agente_movimento(P,A),
+    visitadas.
 
-%ouro([_,_,yes,_,_], grab).
+ouro([_,_,yes,_,_], grab).
 
-   casas_seguras([]).
     
 agente_movimento([no,no,no,no,no],goforward).
 
@@ -113,12 +110,12 @@ agente_movimento([_,_,_,yes,_], A) :- %ao esbarrar mudará sua direcao para dire
 
 agente_movimento([_,_,yes,_,_],grab).
 
-flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
-    flecha(X),
-    X > 0,
-    Z is X - 1,
-    retractall(flecha(_)),
-    assert(flecha(Z)).
+%flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
+%    flecha(X),
+%    X > 0,
+%    Z is X - 1,
+%    retractall(flecha(_)),
+%    assert(flecha(Z)).
 
 virae :- %virar esquerda
     orientacao(A),
@@ -134,7 +131,7 @@ virad :- %virar direita
     retractall(orientacao(_)),
     assert(orientacao(C)).
 
-local_agent :- 
+local_agent(goforward):- 
     orientacao(0),
     posicao(X,Y),
     Z is X + 1,
@@ -142,7 +139,7 @@ local_agent :-
     retractall(posicao(_,_)),
     assert(posicao(Z,Y)).
 
-local_agent :-
+local_agent(goforward):-
     orientacao(90),
     posicao(X,Y),
     Z is Y + 1,
@@ -150,7 +147,7 @@ local_agent :-
     retractall(posicao(_,_)),
     assert(posicao(X,Z)).
 
-local_agent :- 
+local_agent(goforward):- 
     orientacao(180),
     posicao(X,Y),
     Z is X - 1,
@@ -158,7 +155,7 @@ local_agent :-
     retractall(posicao(_,_)),
     assert(posicao(Z,Y)).
 
-local_agent :- 
+local_agent(goforward):- 
     orientacao(270),
     posicao(X,Y),
     Z is Y - 1,
