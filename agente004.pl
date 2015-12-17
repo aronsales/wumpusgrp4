@@ -76,11 +76,11 @@ run_agent(P,Acao):-
     write('Posicao do agente: '),
     writeln(S),
     frente(P),
-    cima(P),
-    tras(P),
-    baixo(P),
-    ouro(P,A);
-    agente_movimento(P,A),
+    %cima(P),
+    %traz(P),
+    %baixo(P),
+    gogo(Acao),
+    movimento(P,Acao),
     visitadas.
 
 movimento([no,yes,no,no,no], Acao) :-
@@ -171,44 +171,6 @@ frente([no,no,_,_,_]):-
     Z is X + 1,
     Z < 4,
     not(member([Z,Y], A)),
-    not(member([X,B], A)),
-    append([[X,B]],A, C),
-    retractall(casas_seguras(_)),
-    assert(casas_seguras(C)).
-frente.
-
-cima([no,no,_,_,_]):- 
-    casas_seguras(A),
-    posicao(Z,B),
-    orientacao(90),
-    Y is B + 1,
-    B < 4,
-    not(member([Z,Y],A)),
-    append([[Z,Y]],A, D),
-    retractall(casas_seguras(_)),
-    assert(casas_seguras(D)).
-cima.
-
-tras([no,no,_,_,_]):- 
-    casas_seguras(A),
-    posicao(Z,B),
-    orientacao(180),
-    X is Z - 1,
-    Z > 1,
-    not(member([X,B],A)),
-    append(A,[[X,B]],C),
-    retractall(casas_seguras(_)),
-    assert(casas_seguras(C)).
-tras.
-
-baixo([no,no,_,_,_]):- 
-    casas_seguras(A),
-    posicao(Z,B),
-    orientacao(270),
-    Y is B - 1,
-    B > 1,
-    not(member([Z,Y],A)),
-    append(A,[[Z,Y]],D),
     retractall(casas_seguras(_)),
     assert(casas_seguras([Z,Y])).
 
