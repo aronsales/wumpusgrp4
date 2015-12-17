@@ -82,7 +82,7 @@ run_agent(P,A):-
     local_agent(A),
     frente(P),
     cima(P),
-    traz(P),
+    tras(P),
     baixo(P),
     ouro(P,A);
     agente_movimento(P,A),
@@ -189,7 +189,7 @@ cima([no,no,_,_,_]):-
     assert(casas_seguras(D)).
 cima.
 
-traz([no,no,_,_,_]):- 
+tras([no,no,_,_,_]):- 
     casas_seguras(A),
     posicao(Z,B),
     orientacao(180),
@@ -199,7 +199,7 @@ traz([no,no,_,_,_]):-
     append(A,[[X,B]],C),
     retractall(casas_seguras(_)),
     assert(casas_seguras(C)).
-traz.
+tras.
 
 baixo([no,no,_,_,_]):- 
     casas_seguras(A),
