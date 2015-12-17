@@ -76,19 +76,11 @@ run_agent(P,Acao):-
     write('Posicao do agente: '),
     writeln(S),
     frente(P),
-<<<<<<< HEAD
-    %cima(P),
-    %traz(P),
-    %baixo(P),
-    gogo(Acao),
-    movimento(P,Acao),
-=======
     cima(P),
     tras(P),
     baixo(P),
     ouro(P,A);
     agente_movimento(P,A),
->>>>>>> develop
     visitadas.
 
 movimento([no,yes,no,no,no], Acao) :-
@@ -178,9 +170,7 @@ frente([no,no,_,_,_]):-
     O==0,
     Z is X + 1,
     Z < 4,
-<<<<<<< HEAD
     not(member([Z,Y], A)),
-=======
     not(member([X,B], A)),
     append([[X,B]],A, C),
     retractall(casas_seguras(_)),
@@ -219,7 +209,6 @@ baixo([no,no,_,_,_]):-
     B > 1,
     not(member([Z,Y],A)),
     append(A,[[Z,Y]],D),
->>>>>>> develop
     retractall(casas_seguras(_)),
     assert(casas_seguras([Z,Y])).
 
