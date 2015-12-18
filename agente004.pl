@@ -67,7 +67,7 @@ init_agent:-
 restart_agent:-
    init_agent.
 
-run_agent(P,A):-
+run_agent(P,Acao):-
     write('Percebi: '),
     writeln( P ),
     casas_seguras( X ),
@@ -79,13 +79,13 @@ run_agent(P,A):-
     casas_visitadas(I),
     write('Casas Visitadas: '),
     writeln(I),
-    local_agent(A),
+    verificar_local_agent(Acao),
     frente(P),
     cima(P),
     tras(P),
     baixo(P),
-    ouro(P,A);
-    agente_movimento(P,A),
+    ouro(P,Acao);
+    agente_movimento(P,Acao),
     visitadas.
 
 ouro([_,_,yes,_,_], grab).
@@ -93,22 +93,20 @@ ouro([_,_,yes,_,_], grab).
     
 agente_movimento([no,no,no,no,no],goforward).
 
-agente_movimento([no,yes,no,no,no], A) :-
-   senti_buraco([A|S]), %Coloca o A(Acao) como cabeça da lista
+agente_movimento([no,yes,no,no,no], Acao) :-
+   senti_buraco([Acao|S]), %Coloca o A(Acao) como cabeça da lista
    retractall(senti_buraco(_)), %Limpa a variavel
     assert(senti_buraco(S)). %Declara a variavel como a cauda da lista
    
-agente_movimento([yes,_,_,_,_], A):- %ao senti um fedor andara uma cassa para trás
-    senti_wumpus([A|S]),
+agente_movimento([yes,_,_,_,_], Acao):- %ao senti um fedor andara uma cassa para trás
+    senti_wumpus([Acao|S]),
    retractall(senti_wumpus(_)),
    assert(senti_wumpus(S)).
 
-agente_movimento([_,_,_,yes,_], A) :- %ao esbarrar mudará sua direcao para direita
-    esbarrada([A|S]),
+agente_movimento([_,_,_,yes,_], Acao) :- %ao esbarrar mudará sua direcao para direita
+    esbarrada([Acao|S]),
     retractall(esbarrada(_)),
     assert(esbarrada(S)).
-
-agente_movimento([_,_,yes,_,_],grab).
 
 %flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
 %    flecha(X),
@@ -116,50 +114,53 @@ agente_movimento([_,_,yes,_,_],grab).
 %    Z is X - 1,
 %    retractall(flecha(_)),
 %    assert(flecha(Z)).
+%
+%virae :- %virar esquerda
+%    orientacao(A),
+%    B is A + 90,
+%    C is B mod 360,
+%    retractall(orientacao(_)),
+%    assert(orientacao(C)).
+%
+%virad :- %virar direita
+%    orientacao(A),
+%    B is A - 90,
+%    C is B mod 360,
+%    retractall(orientacao(_)),
+%   assert(orientacao(C)).
 
-virae :- %virar esquerda
-    orientacao(A),
-    B is A + 90,
-    C is B mod 360,
-    retractall(orientacao(_)),
-    assert(orientacao(C)).
+verificar_local_agent(goforward):-
+    local_agent.
 
-virad :- %virar direita
-    orientacao(A),
-    B is A - 90,
-    C is B mod 360,
-    retractall(orientacao(_)),
-    assert(orientacao(C)).
-
-local_agent(goforward):- 
+local_agent:- 
     orientacao(0),
     posicao(X,Y),
-    Z is X + 1,
     X < 4,
+    Z is X + 1,
     retractall(posicao(_,_)),
     assert(posicao(Z,Y)).
 
-local_agent(goforward):-
+local_agent:-
     orientacao(90),
     posicao(X,Y),
-    Z is Y + 1,
     Y < 4,
+    Z is Y + 1,
     retractall(posicao(_,_)),
     assert(posicao(X,Z)).
 
-local_agent(goforward):- 
+local_agent:- 
     orientacao(180),
     posicao(X,Y),
+    X > 1,
     Z is X - 1,
-    X  >  1,
     retractall(posicao(_,_)),
     assert(posicao(Z,Y)).
 
-local_agent(goforward):- 
+local_agent:- 
     orientacao(270),
     posicao(X,Y),
+    Y > 1,
     Z is Y - 1,
-    Y  >  1,
     retractall(posicao(_,_)),
     assert(posicao(X,Z)).
 
@@ -167,50 +168,50 @@ local_agent.
 
 frente([no,no,_,_,_]):- 
     casas_seguras(A),
-    posicao(Z,B),
+    posicao(X,Y),
     orientacao(0),
-    X is Z + 1,
-    Z < 4,
-    not(member([X,B], A)),
-    append([[X,B]],A, C),
+    X < 4,
+    Z is X+1,
+    not(member([Z,Y], A)),
+    append(A,[[Z,Y]],C),
     retractall(casas_seguras(_)),
     assert(casas_seguras(C)).
 frente.
 
 cima([no,no,_,_,_]):- 
     casas_seguras(A),
-    posicao(Z,B),
+    posicao(X,Y),
     orientacao(90),
-    Y is B + 1,
-    B < 4,
-    not(member([Z,Y],A)),
-    append([[Z,Y]],A, D),
+    Y < 4,
+    Z is Y+1,
+    not(member([X,Z],A)),
+    append(A,[[X,Z]], C),
     retractall(casas_seguras(_)),
-    assert(casas_seguras(D)).
+    assert(casas_seguras(C)).
 cima.
 
 tras([no,no,_,_,_]):- 
     casas_seguras(A),
-    posicao(Z,B),
+    posicao(X,Y),
     orientacao(180),
-    X is Z - 1,
-    Z > 1,
-    not(member([X,B],A)),
-    append(A,[[X,B]],C),
+    X > 1,
+    Z is X-1,
+    not(member([Z,Y],A)),
+    append(A,[[Z,Y]],C),
     retractall(casas_seguras(_)),
     assert(casas_seguras(C)).
 tras.
 
 baixo([no,no,_,_,_]):- 
     casas_seguras(A),
-    posicao(Z,B),
+    posicao(X,Y),
     orientacao(270),
-    Y is B - 1,
-    B > 1,
-    not(member([Z,Y],A)),
-    append(A,[[Z,Y]],D),
+    Y > 1,
+    Z is Y-1,
+    not(member([X,Z],A)),
+    append(A,[[X,Z]],C),
     retractall(casas_seguras(_)),
-    assert(casas_seguras(D)).
+    assert(casas_seguras(C)).
 baixo.
 
 verificar([no,no,_,_,_]):-
