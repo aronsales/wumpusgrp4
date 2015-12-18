@@ -30,51 +30,59 @@
 %  swipl -s agente007.pl
 %  e faca a consulta (query) na forma:
 %  ?- start.
- 
-:- load_files([wumpus3]).
-:- dynamic([orientacao/1,posicao/2,casas_seguras/1,casas_perigosas/1,casas_visitadas/1,senti_buraco/1,esbarrada/1]).
 
+
+:- load_files([wumpus3]).
+:- dynamic([orientacao/1
+            posicao/2,
+            volta/1,
+            %flecha/1,
+            casas_seguras/1,
+            casas_perigosas/1,
+            casas_visitadas/1,
+            senti_buraco/1,
+            esbarrada/1]).
+            
 wumpusworld(pit3, 4). %tipo, tamanho
 
 init_agent:-
+
     retractall(esbarrada(_)), %variavel pra guardar a lista de açoes caso esbarre
     retractall(senti_buraco(_)), %variavel pra guardar a lista de ações caso sinta uma brisa
     retractall(senti_wumpus(_)),
     retractall(orientacao(_)),
     retractall(posicao(_,_)),
+    retractall(volta(_)),
     retractall(casas_seguras(_)),
     retractall(casas_perigosas(_)),
     retractall(casas_visitadas(_)),
-    assert(orientacao(0)),
-    assert(posicao([1,1])),
+    assert(orientacao( 0 )),
+    assert(posicao(1,1)),
+    assert(volta( 0 )),
     assert(casas_seguras([])),
     assert(casas_perigosas([])),
-    assert(casas_visitadas([[1,1]])),
+    assert(casas_visitadas([])),
     assert(senti_buraco([turnleft,turnleft,goforward])), %ações pra executar caso sinta uma brisa
     assert(senti_wumpus([shoot,turnleft,turnleft,goforward])), %ações pra executar caso sinta fedor
     assert(esbarrada([turnright])). %ações para executar caso esbarre
 
+    
 restart_agent:-
-   init_agent.
-
-run_agent(P,Acao):-
+    init_agent.
+    
+run_agent(P,A):-
     write('Percebi: '),
-    writeln(P),
-    casas_seguras(X),
+    writeln( P ),
+    casas_seguras( X ),
     write('Casas Seguras: '),
-    writeln(X),
-    casas_perigosas(Z),
+    writeln( X ),
+    casas_perigosas( Z ),
     write('Casas Perigosas: '),
-    writeln(Z),
+    writeln( Z ),
     casas_visitadas(I),
     write('Casas Visitadas: '),
     writeln(I),
-    orientacao(O),
-    write('Orientacao do agente: '),
-    writeln(O),
-    posicao(S),
-    write('Posicao do agente: '),
-    writeln(S),
+    local_agent(A),
     frente(P),
     cima(P),
     tras(P),
@@ -82,27 +90,27 @@ run_agent(P,Acao):-
     ouro(P,A);
     agente_movimento(P,A),
     visitadas.
+    
+ouro([_,_,yes,_,_], grab).
 
-movimento([no,yes,no,no,no], Acao) :-
-   senti_buraco([Acao|S]), %Coloca o A(Acao) como cabeça da lista
-   retractall(senti_buraco(_)), %Limpa a variavel
-   assert(senti_buraco(S)). %Declara a variavel como a cauda da lista
-   
-movimento([yes,_,_,_,_], Acao):- %ao senti um fedor andara uma cassa para trás
-   senti_wumpus([Acao|S]),
-   retractall(senti_wumpus(_)),
-   assert(senti_wumpus(S)).
+agente_movimento([no,no,no,no,no],goforward).
 
-movimento([_,_,_,yes,_], Acao) :- %ao esbarrar mudará sua direcao para direita
-    esbarrada([Acao|S]),
+agente_movimento([no,yes,no,no,no], A) :-
+    senti_buraco([A|S]), %Coloca o A(Acao) como cabeça da lista
+    retractall(senti_buraco(_)), %Limpa a variavel
+    assert(senti_buraco(S)). %Declara a variavel como a cauda da lista
+    
+agente_movimento([yes,_,_,_,_], A):- %ao senti um fedor andara uma cassa para trás
+    senti_wumpus([A|S]),
+    retractall(senti_wumpus(_)),
+    assert(senti_wumpus(S)).
+    
+agente_movimento([_,_,_,yes,_], A) :- %ao esbarrar mudará sua direcao para direita
+    esbarrada([A|S]),
     retractall(esbarrada(_)),
     assert(esbarrada(S)).
-
-movimento([_,_,yes,_,_], grab).
-
-movimento([no,no,no,no,no], goforward).
-
-movimento.
+    
+agente_movimento([_,_,yes,_,_],grab).
 
 %flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
 %    flecha(X),
@@ -111,66 +119,60 @@ movimento.
 %    retractall(flecha(_)),
 %    assert(flecha(Z)).
 
-%virae :- %virar esquerda
-%    orientacao(A),
-%    B is A + 90,
-%    C is B mod 360,
-%    retractall(orientacao(_)),
-%    assert(orientacao(C)).
-
-%virad :- %virar direita
-%    orientacao(A),
-%    B is A - 90,
-%    C is B mod 360,
-%    retractall(orientacao(_)),
-%    assert(orientacao(C)).
-
-gogo(goforward):- 
-    posicao([X,Y]),
-    orientacao(O),
-    O==0,
-    Z is X+1,
-    Z < 4,
-    retractall(posicao(_)),
-    assert(posicao([Z,Y])).
-
-%agente_posicao(goforward):-
-%    posicao([X,Y]),
-%    orientacao(O),
-%    O==90,
-%    Z is Y+1,
-%    Y < 4,
-%    retractall(posicao(_,_)),
-%    assert(posicao([X,Z])).
-
-%agente_posicao(goforward):
-%    posicao([X,Y]),
-%    orientacao(O),
-%    O==180,
-%    Z is X-1,
-%    Z > 1,
-%    retractall(posicao(_)),
-%    assert(posicao([Z,Y])).
-
-%agente_posicao(goforward):-
-%    posicao([X,Y]),
-%    orientacao(O),
-%    O==270,
-%    Z is Y-1,
-%    Z > 1,
-%    retractall(posicao(_)),
-%    assert(posicao([X,Z])).
-
-agente_posicao.
+virae :- %virar esquerda
+    orientacao(A),
+    B is A + 90,
+    C is B mod 360,
+    retractall(orientacao(_)),
+    assert(orientacao(C)).
+    
+virad :- %virar direita
+    orientacao(A),
+    B is A - 90,
+    C is B mod 360,
+    retractall(orientacao(_)),
+    assert(orientacao(C)).
+    
+local_agent(goforward):- 
+    orientacao(0),
+    posicao(X,Y),
+    Z is X + 1,
+    X < 4,
+    retractall(posicao(_,_)),
+    assert(posicao(Z,Y)).
+    
+local_agent(goforward):-
+    orientacao(90),
+    posicao(X,Y),
+    Z is Y + 1,
+    Y < 4,
+    retractall(posicao(_,_)),
+    assert(posicao(X,Z)).
+    
+local_agent(goforward):- 
+    orientacao(180),
+    posicao(X,Y),
+    Z is X - 1,
+    X  >  1,
+    retractall(posicao(_,_)),
+    assert(posicao(Z,Y)).
+    
+local_agent(goforward):- 
+    orientacao(270),
+    posicao(X,Y),
+    Z is Y - 1,
+    Y  >  1,
+    retractall(posicao(_,_)),
+    assert(posicao(X,Z)).
+    
+local_agent.
 
 frente([no,no,_,_,_]):- 
     casas_seguras(A),
-    posicao([X,Y]),
-    orientacao(O),
-    O==0,
-    Z is X + 1,
+    posicao(Z,B),
+    orientacao(0),
+    X is Z + 1,
     Z < 4,
-    not(member([Z,Y], A)),
     not(member([X,B], A)),
     append([[X,B]],A, C),
     retractall(casas_seguras(_)),
@@ -210,58 +212,19 @@ baixo([no,no,_,_,_]):-
     not(member([Z,Y],A)),
     append(A,[[Z,Y]],D),
     retractall(casas_seguras(_)),
-    assert(casas_seguras([Z,Y])).
+    assert(casas_seguras(D)).
+baixo.
 
-frente.
-%
-%cima([no,no,_,_,_]):- 
-%    casas_seguras(A),
-%    posicao(Z,B),
-%    orientacao(90),
-%    Y is B + 1,
-%    B < 4,
-%    not(member([Z,Y],A)),
-%    append([[Z,Y]],A, D),
-%    retractall(casas_seguras(_)),
-%    assert(casas_seguras(D)).
-%cima.
-%
-%traz([no,no,_,_,_]):- 
-%    casas_seguras(A),
-%    posicao(Z,B),
-%    orientacao(180),
-%    X is Z - 1,
-%    Z > 1,
-%    not(member([X,B],A)),
-%    append(A,[[X,B]],C),
-%    retractall(casas_seguras(_)),
-%    assert(casas_seguras(C)).
-%traz.
-
-%baixo([no,no,_,_,_]):- 
-%    casas_seguras(A),
-%    posicao(Z,B),
-%    orientacao(270),
-%    Y is B - 1,
-%    B > 1,
-%    not(member([Z,Y],A)),
-%    append(A,[[Z,Y]],D),
-%    retractall(casas_seguras(_)),
-%    assert(casas_seguras(D)).
-%baixo.
-
-%verificar([no,no,_,_,_]):-
-%    frente(P),cima(P),traz(P),baixo(P),write('Verificacao concluida').
+verificar([no,no,_,_,_]):-
+frente(P),cima(P),traz(P),baixo(P),write('Verificacao concluida').
 
 visitadas:-
-   casas_visitadas(A),
-   posicao([X,Y]),
-   delete(A,[X,Y],C),
-   append(C,[[X,Y]],B),
-   retractall(casas_visitadas(_)),
-   assert(casas_visitadas(B)).
-
-visitadas.
+    casas_visitadas(A),
+    posicao(X,Y),
+    delete(A,[X,Y],C),
+    append(C,[[X,Y]],B),
+    retractall(casas_visitadas(_)),
+    assert(casas_visitadas(B)).
 
 %perigosas_S:-
 %   casas_perigosas(A),
@@ -278,4 +241,3 @@ visitadas.
 %   append(C,[[X,Y]],B),
 %   retractall(casas_perigosas(_)),
 %   assert(casas_perigosas(B)).
-
