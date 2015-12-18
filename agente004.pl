@@ -33,7 +33,7 @@
  
 :- load_files([wumpus3]).
 :- dynamic([orientacao/1,
-            posicao/2,
+            posicao/1,
             volta/1,
             %flecha/1,
             casas_seguras/1,
@@ -49,17 +49,17 @@ init_agent:-
     retractall(senti_buraco(_)), %variavel pra guardar a lista de ações caso sinta uma brisa
     retractall(senti_wumpus(_)),
     retractall(orientacao(_)),
-    retractall(posicao(_,_)),
+    retractall(posicao(_)),
     retractall(volta(_)),
     retractall(casas_seguras(_)),
     retractall(casas_perigosas(_)),
     retractall(casas_visitadas(_)),
     assert(orientacao( 0 )),
-    assert(posicao(1,1)),
+    assert(posicao([1,1])),
     assert(volta( 0 )),
     assert(casas_seguras([])),
     assert(casas_perigosas([])),
-    assert(casas_visitadas([])),
+    assert(casas_visitadas([[1,1]])),
     assert(senti_buraco([turnleft,turnleft,goforward])), %ações pra executar caso sinta uma brisa
     assert(senti_wumpus([shoot,turnleft,turnleft,goforward])), %ações pra executar caso sinta fedor
     assert(esbarrada([turnright])). %ações para executar caso esbarre
@@ -79,7 +79,10 @@ run_agent(P,Acao):-
     casas_visitadas(I),
     write('Casas Visitadas: '),
     writeln(I),
-    verificar_local_agent(Acao),
+    posicao(Pos),
+    write('Posicao: '),
+    writeln(Pos),
+    local_agent,
     frente(P),
     cima(P),
     tras(P),
@@ -127,48 +130,45 @@ agente_movimento([_,_,_,yes,_], Acao) :- %ao esbarrar mudará sua direcao para d
 %    B is A - 90,
 %    C is B mod 360,
 %    retractall(orientacao(_)),
-%   assert(orientacao(C)).
-
-verificar_local_agent(goforward):-
-    local_agent.
+%   assert(orientacao(C)),
 
 local_agent:- 
     orientacao(0),
-    posicao(X,Y),
+    posicao([X,Y]),
     X < 4,
-    Z is X + 1,
-    retractall(posicao(_,_)),
-    assert(posicao(Z,Y)).
+    Z is X+1,
+    retractall(posicao(_)),
+    assert(posicao([Z,Y])).
 
 local_agent:-
     orientacao(90),
-    posicao(X,Y),
+    posicao([X,Y]),
     Y < 4,
-    Z is Y + 1,
-    retractall(posicao(_,_)),
-    assert(posicao(X,Z)).
+    Z is Y+1,
+    retractall(posicao(_)),
+    assert(posicao([X,Z])).
 
 local_agent:- 
     orientacao(180),
-    posicao(X,Y),
+    posicao([X,Y]),
     X > 1,
-    Z is X - 1,
-    retractall(posicao(_,_)),
-    assert(posicao(Z,Y)).
+    Z is X-1,
+    retractall(posicao(_)),
+    assert(posicao([Z,Y])).
 
 local_agent:- 
     orientacao(270),
-    posicao(X,Y),
+    posicao([X,Y]),
     Y > 1,
-    Z is Y - 1,
-    retractall(posicao(_,_)),
-    assert(posicao(X,Z)).
+    Z is Y-1,
+    retractall(posicao(_)),
+    assert(posicao([X,Z])).
 
 local_agent.
 
 frente([no,no,_,_,_]):- 
     casas_seguras(A),
-    posicao(X,Y),
+    posicao([X,Y]),
     orientacao(0),
     X < 4,
     Z is X+1,
@@ -180,7 +180,7 @@ frente.
 
 cima([no,no,_,_,_]):- 
     casas_seguras(A),
-    posicao(X,Y),
+    posicao([X,Y]),
     orientacao(90),
     Y < 4,
     Z is Y+1,
@@ -192,7 +192,7 @@ cima.
 
 tras([no,no,_,_,_]):- 
     casas_seguras(A),
-    posicao(X,Y),
+    posicao([X,Y]),
     orientacao(180),
     X > 1,
     Z is X-1,
@@ -204,7 +204,7 @@ tras.
 
 baixo([no,no,_,_,_]):- 
     casas_seguras(A),
-    posicao(X,Y),
+    posicao([X,Y]),
     orientacao(270),
     Y > 1,
     Z is Y-1,
@@ -219,7 +219,7 @@ verificar([no,no,_,_,_]):-
 
 visitadas:-
    casas_visitadas(A),
-   posicao(X,Y),
+   posicao([X,Y]),
    delete(A,[X,Y],C),
    append(C,[[X,Y]],B),
    retractall(casas_visitadas(_)),
