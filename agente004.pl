@@ -211,6 +211,7 @@ baixo([no,no,_,_,_]):-
     B > 1,
     not(member([Z,Y],A)),
     append(A,[[Z,Y]],D),
+    not(member([Z,Y], A)),
     retractall(casas_seguras(_)),
     assert(casas_seguras(D)).
 baixo.
