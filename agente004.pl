@@ -30,7 +30,7 @@
 %  swipl -s agente007.pl
 %  e faca a consulta (query) na forma:
 %  ?- start.
- 
+
 :- load_files([wumpus3]).
 :- dynamic([orientacao/1,
             posicao/2,
@@ -38,9 +38,9 @@
             casas_seguras/1,
             casas_perigosas/1,
             casas_visitadas/1,
-            numero_giros/1]).
+            numero_giros/1]). 
 
-wumpusworld(pit3, 4). %tipo, tamanho
+        wumpusworld(pit3, 4). %tipo, tamanho
 
 init_agent:-
     retractall(orientacao(_)),
@@ -59,8 +59,8 @@ init_agent:-
     assert(casas_visitadas([[1,1]])).
 
 restart_agent:-
-   init_agent.
-
+    init_agent.
+    
 run_agent(P,Acao):-
     write('Percebi: '),
     writeln( P ),
@@ -84,8 +84,6 @@ run_agent(P,Acao):-
     agente_movimento(P,Acao),
     visitadas.
 
-ouro([_,_,yes,_,_], grab).
-
 girei:-
     numero_giros(Ng),
     Ng1 is Ng+1,
@@ -102,19 +100,19 @@ agente_movimento([_,_,_,_,_], goforward):-
     assert(numero_giros(0)),
     local_agent.
 
-agente_movimento([no,yes,no,no,no], turnleft):-
-    girei,
-    viraesquerda.
+%agente_movimento([no,yes,no,no,no], turnleft):-
+%    girei,
+%    viraesquerda.
 
-agente_movimento([yes,_,_,_,_], turnleft):-
-    girei,
-    viraesquerda.
+%agente_movimento([yes,_,_,_,_], turnleft):-
+    %girei,
+    %viraesquerda.
    %senti_wumpus([Acao|S]),
    %retractall(senti_wumpus(_)),
    %assert(senti_wumpus(S)).
 
-agente_movimento([_,_,_,yes,_], turnright):- %ao esbarrar mudará sua direcao para direita
-    viradireita.
+   %agente_movimento([_,_,_,yes,_], turnright):- %ao esbarrar mudará sua direcao para direita
+   %viradireita.
     %esbarrada([Acao|S]),
     %retractall(esbarrada(_)),
     %assert(esbarrada(S)).
@@ -132,7 +130,7 @@ viraesquerda :- %virar esquerda
     C is B mod 360,
     retractall(orientacao(_)),
     assert(orientacao(C)).
-
+    
 viradireita :- %virar direita
     orientacao(O),
     B is O - 90,
@@ -147,7 +145,7 @@ local_agent:-
     Z is X+1,
     retractall(posicao(_)),
     assert(posicao([Z,Y])).
-
+    
 local_agent:-
     orientacao(90),
     posicao([X,Y]),
@@ -155,15 +153,15 @@ local_agent:-
     Z is Y+1,
     retractall(posicao(_)),
     assert(posicao([X,Z])).
-
+    
 local_agent:- 
     orientacao(180),
     posicao([X,Y]),
     X > 1,
-    Z is X-1,
+    Z is X - 1,
     retractall(posicao(_)),
     assert(posicao([Z,Y])).
-
+    
 local_agent:- 
     orientacao(270),
     posicao([X,Y]),
@@ -222,6 +220,7 @@ baixo:-
     assert(casas_seguras(C)).
 baixo.
 
+
 visitadas:-
    casas_visitadas(A),
    posicao([X,Y]),
@@ -245,4 +244,4 @@ visitadas:-
 %   append(C,[[X,Y]],B),
 %   retractall(casas_perigosas(_)),
 %   assert(casas_perigosas(B)).
-
+ 
