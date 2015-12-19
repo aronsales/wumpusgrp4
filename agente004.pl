@@ -82,7 +82,8 @@ run_agent(P,Acao):-
     %%%%%%%%%%%%%%%%%%%%%% 
     verificar(P),
     agente_movimento(P,Acao),
-    visitadas.
+    visitadas,
+    retirar_seguras.
 
 girei:-
     numero_giros(Ng),
@@ -228,6 +229,14 @@ visitadas:-
    append(C,[[X,Y]],B),
    retractall(casas_visitadas(_)),
    assert(casas_visitadas(B)).
+
+retirar_seguras:-
+    casas_seguras(A),
+    posicao([X,Y]),
+    delete(A,[X,Y],D),
+    delete(D,[1,1],C),
+    retractall(casas_seguras(_)),
+    assert(casas_seguras(C)).
 
 %perigosas_S:-
 %   casas_perigosas(A),
