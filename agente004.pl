@@ -79,8 +79,8 @@ run_agent(P,Acao):-
     orientacao(O),
     write('Orientacao: '),
     writeln(O),
-    %%%%%%%%%%%%%%%%%%%%%%
-    verificar(P), 
+    %%%%%%%%%%%%%%%%%%%%%% 
+    verificar(P),
     agente_movimento(P,Acao),
     visitadas.
 
@@ -180,7 +180,7 @@ verificar([no,no,_,_,_]):-
 
 frente:- 
     casas_seguras(A),
-    posicao(X,Y),
+    posicao([X,Y]),
     X < 4,
     Z is X+1,
     not(member([Z,Y], A)),
@@ -191,7 +191,7 @@ frente.
 
 cima:- 
     casas_seguras(A),
-    posicao(X,Y),
+    posicao([X,Y]),
     Y < 4,
     Z is Y+1,
     not(member([X,Z],A)),
@@ -202,7 +202,7 @@ cima.
 
 tras:- 
     casas_seguras(A),
-    posicao(X,Y),
+    posicao([X,Y]),
     X > 1,
     Z is X-1,
     not(member([Z,Y],A)),
@@ -213,7 +213,7 @@ tras.
 
 baixo:- 
     casas_seguras(A),
-    posicao(X,Y),
+    posicao([X,Y]),
     Y > 1,
     Z is Y-1,
     not(member([X,Z],A)),
