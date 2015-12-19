@@ -33,7 +33,7 @@
  
 :- load_files([wumpus3]).
 :- dynamic([orientacao/1,
-            posicao/1,
+            posicao/2,
             volta/1,
             casas_seguras/1,
             casas_perigosas/1,
@@ -80,11 +80,7 @@ run_agent(P,Acao):-
     write('Orientacao: '),
     writeln(O),
     %%%%%%%%%%%%%%%%%%%%%%
-    frente(P),
-    cima(P),
-    tras(P),
-    baixo(P),
-    ouro(P,Acao);
+    verificar(P), 
     agente_movimento(P,Acao),
     visitadas.
 
@@ -176,10 +172,15 @@ local_agent:-
     retractall(posicao(_)),
     assert(posicao([X,Z])).
 
-frente([no,no,_,_,_]):- 
+verificar([no,no,_,_,_]):-
+    frente,
+    cima,
+    tras,
+    baixo.
+
+frente:- 
     casas_seguras(A),
-    posicao([X,Y]),
-    orientacao(0),
+    posicao(X,Y),
     X < 4,
     Z is X+1,
     not(member([Z,Y], A)),
@@ -188,10 +189,9 @@ frente([no,no,_,_,_]):-
     assert(casas_seguras(C)).
 frente.
 
-cima([no,no,_,_,_]):- 
+cima:- 
     casas_seguras(A),
-    posicao([X,Y]),
-    orientacao(90),
+    posicao(X,Y),
     Y < 4,
     Z is Y+1,
     not(member([X,Z],A)),
@@ -200,10 +200,9 @@ cima([no,no,_,_,_]):-
     assert(casas_seguras(C)).
 cima.
 
-tras([no,no,_,_,_]):- 
+tras:- 
     casas_seguras(A),
-    posicao([X,Y]),
-    orientacao(180),
+    posicao(X,Y),
     X > 1,
     Z is X-1,
     not(member([Z,Y],A)),
@@ -212,10 +211,9 @@ tras([no,no,_,_,_]):-
     assert(casas_seguras(C)).
 tras.
 
-baixo([no,no,_,_,_]):- 
+baixo:- 
     casas_seguras(A),
-    posicao([X,Y]),
-    orientacao(270),
+    posicao(X,Y),
     Y > 1,
     Z is Y-1,
     not(member([X,Z],A)),
@@ -223,9 +221,6 @@ baixo([no,no,_,_,_]):-
     retractall(casas_seguras(_)),
     assert(casas_seguras(C)).
 baixo.
-
-verificar([no,no,_,_,_]):-
-    frente(P),cima(P),traz(P),baixo(P),write('Verificacao concluida').
 
 visitadas:-
    casas_visitadas(A),
