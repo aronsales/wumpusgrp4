@@ -35,6 +35,7 @@
 :- dynamic([orientacao/1,
             posicao/2,
             volta/1,
+            minha_frente/1,
             casas_seguras/1,
             casas_perigosas/1,
             casas_visitadas/1,
@@ -50,6 +51,8 @@ init_agent:-
     retractall(casas_perigosas(_)),
     retractall(casas_visitadas(_)),
     retractall(numero_giros(_)),
+    retractall(minha_frente(_)),
+    assert(minha_frente([[2,1]])),
     assert(numero_giros(0)),
     assert(orientacao( 0 )),
     assert(posicao([1,1])),
@@ -67,9 +70,9 @@ run_agent(P,Acao):-
     casas_seguras( X ),
     write('Casas Seguras: '),
     writeln( X ),
-    casas_perigosas( Z ),
+    casas_perigosas( Perig ),
     write('Casas Perigosas: '),
-    writeln( Z ),
+    writeln( Perig ),
     casas_visitadas(I),
     write('Casas Visitadas: '),
     writeln(I),
@@ -79,44 +82,39 @@ run_agent(P,Acao):-
     orientacao(O),
     write('Orientacao: '),
     writeln(O),
-    %%%%%%%%%%%%%%%%%%%%%% 
-    verificar(P),
-    agente_movimento(P,Acao),
-    visitadas,
-    retirar_seguras.
+    minha_frente(Mf),
+    write('A casa a minha frente e: '),
+    writeln(Mf),
+    agente_movimento(P,Acao).
 
 girei:-
     numero_giros(Ng),
     Ng1 is Ng+1,
     retractall(numero_giros(_)),
     assert(numero_giros(Ng1)).
-    
-agente_movimento([no,no,no,no,no],goforward):-
-    local_agent.
 
-agente_movimento([_,_,_,_,_], goforward):-
+agente_movimento(_, goforward):-
     numero_giros(Ng),
     Ng==2,
     retractall(numero_giros(_)),
     assert(numero_giros(0)),
-    local_agent.
+    local_agent,
+    front_of_me.
 
-%agente_movimento([no,yes,no,no,no], turnleft):-
-%    girei,
-%    viraesquerda.
+agente_movimento([yes,no,no,no,no], turnleft):-
+    girei,
+    perigosas_verificar.
 
-%agente_movimento([yes,_,_,_,_], turnleft):-
-    %girei,
-    %viraesquerda.
-   %senti_wumpus([Acao|S]),
-   %retractall(senti_wumpus(_)),
-   %assert(senti_wumpus(S)).
-
-   %agente_movimento([_,_,_,yes,_], turnright):- %ao esbarrar mudará sua direcao para direita
-   %viradireita.
-    %esbarrada([Acao|S]),
-    %retractall(esbarrada(_)),
-    %assert(esbarrada(S)).
+agente_movimento([no,yes,no,no,no], turnleft):-
+    girei,
+    perigosas_verificar.
+    
+agente_movimento([no,no,no,no,no],goforward):-
+    local_agent,
+    verificar,
+    visitadas,
+    retirar_seguras,
+    front_of_me.
 
 %flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
 %    flecha(X),
@@ -171,7 +169,7 @@ local_agent:-
     retractall(posicao(_)),
     assert(posicao([X,Z])).
 
-verificar([no,no,_,_,_]):-
+verificar:-
     frente,
     cima,
     tras,
@@ -221,6 +219,31 @@ baixo:-
     assert(casas_seguras(C)).
 baixo.
 
+front_of_me:-
+    orientacao(0),
+    posicao([X,Y]),
+    X < 4,
+    X1 is X+1,
+    retractall(minha_frente(_)),
+    assert(minha_frente([X1,Y])).
+front_of_me:-
+    orientacao(90),
+    posicao([X,Y]),
+    Y1 is Y+1,
+    retractall(minha_frente(_)),
+    assert(minha_frente([X,Y1])).
+front_of_me:-
+    orientacao(180),
+    posicao([X,Y]),
+    X1 is X-1,
+    retractall(minha_frente(_)),
+    assert(minha_frente([X1,Y])).
+front_of_me:-
+    orientacao(270),
+    posicao([X,Y]),
+    Y1 is Y-1,
+    retractall(minha_frente(_)),
+    assert(minha_frente([X,Y1])).
 
 visitadas:-
    casas_visitadas(A),
@@ -233,24 +256,62 @@ visitadas:-
 retirar_seguras:-
     casas_seguras(A),
     posicao([X,Y]),
-    delete(A,[X,Y],D),
+    delete(A,[X,Y],D),  
     delete(D,[1,1],C),
     retractall(casas_seguras(_)),
     assert(casas_seguras(C)).
 
-%perigosas_S:-
-%   casas_perigosas(A),
-%   posicao(X,Y),
-%   delete(A,[X,Y],C),
-%   append(C,[[X,Y]],B),
-%   retractall(casas_perigosas(_)),
-%   assert(casas_perigosas(B)).
+perigosas_verificar:-
+    perigosas_frente,
+    perigosas_cima,
+    perigosas_tras,
+    perigosas_baixo.
 
-%perigosas_B:-
-%   casas_perigosas(A),
-%   posicao(X,Y),
-%   delete(A,[X,Y],C),
-%   append(C,[[X,Y]],B),
-%   retractall(casas_perigosas(_)),
-%   assert(casas_perigosas(B)).
- 
+perigosas_frente:-
+    casas_perigosas(Perig),
+    posicao([X,Y]),
+    X < 4,
+    Z is X+1,
+    not(member([Z,Y], Perig)),
+    append(Perig,[[Z,Y]],C),
+    retractall(casas_perigosas(_)),
+    assert(casas_perigosas(C)).
+
+perigosas_frente.
+
+perigosas_cima:-
+    casas_perigosas(Perig),
+    posicao([X,Y]),
+    Y < 4,
+    Z is Y+1,
+    not(member([X,Z], Perig)),
+    append(Perig,[[X,Z]],C),
+    retractall(casas_perigosas(_)),
+    assert(casas_perigosas(C)).
+
+perigosas_cima.
+
+perigosas_tras:-
+    casas_perigosas(Perig),
+    posicao([X,Y]),
+    X > 1,
+    Z is X-1,
+    not(member([Z,Y], Perig)),
+    append(Perig,[[Z,Y]],C),
+    retractall(casas_perigosas(_)),
+    assert(casas_perigosas(C)).
+
+perigosas_tras.
+
+perigosas_baixo:-
+    casas_perigosas(Perig),
+    posicao([X,Y]),
+    Y > 1,
+    Z is Y-1,
+    not(member([X,Z], Perig)),
+    append(Perig,[[X,Z]],C),
+    retractall(casas_perigosas(_)),
+    assert(casas_perigosas(C)).
+
+perigosas_baixo.
+
