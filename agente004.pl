@@ -117,6 +117,10 @@ agente_movimento(_,climb):-
 agente_movimento([yes,_,_,_,_], shoot):-
     flecha.
 
+agente_movimento([_,_,_,_,no], climb):-     %precisa de ajustes
+    flecha,
+    write('fugindoooooo!!!!     D=').
+
 agente_movimento([_,no,_,_,yes], goforward):-
     write('wumpus morreu!!!!!!!!!!!!   o/').
 
