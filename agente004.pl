@@ -34,6 +34,7 @@
 :- load_files([wumpus3]).
 :- dynamic([orientacao/1,
             posicao/2,
+            ouro/1,
             ir/1,
             minha_frente/1,
             casas_seguras/1,
@@ -46,6 +47,7 @@
 init_agent:-
     retractall(orientacao(_)),
     retractall(posicao(_)),
+    retractall(ouro(_)),
     retractall(volta(_)),
     retractall(casas_seguras(_)),
     retractall(casas_perigosas(_)),
@@ -54,6 +56,7 @@ init_agent:-
     retractall(minha_frente(_)),
     retractall(ir(_)),
     assert(ir([])),
+    assert(ouro(no)),
     assert(minha_frente([[2,1]])),
     assert(numero_giros(0)),
     assert(orientacao( 0 )),
@@ -99,6 +102,10 @@ girei:-
     retractall(numero_giros(_)),
     assert(numero_giros(Ng1)).
 
+agente_movimento([_,_,yes,_,_], grab):-
+    retractall(ouro(_)),
+    assert(ouro(yes)).
+
 agente_movimento(_, goforward):-
     numero_giros(Ng),
     Ng==2,
@@ -135,6 +142,84 @@ alvo:-
     casas_seguras([Av|_]),
     retractall(ir(_)),
     assert(ir(Av)).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+fuja([X,Y], 0, [X2,Y], goforward):- %angulo=0
+    X<X2,
+    antes,
+    local_agent.
+
+fuja([X,Y], 90, [X,Y2], goforward):- %angulo=90
+    Y<Y2,
+    antes,
+    local_agent.
+
+fuja([X,Y], 180, [X2,Y], goforward):- %angulo=180
+    X>X2,
+    antes,
+    local_agent.
+
+fuja([X,Y], 270, [X,Y2], goforward):- %angulo=270
+    Y>Y2,
+    antes,
+    local_agent.
+
+%para angulo=0 (virado para direita)
+fuja([X,Y], 0, [X2,Y], turnleft):-
+    X>X2,
+    viraesquerda.
+
+fuja([X,Y], 0, [X,Y2], turnright):-
+    Y>Y2,
+    viradireita.
+
+fuja([X,Y], 0, [X,Y2], turnleft):-
+    Y<Y2,
+    viradireita.
+
+%para angulo=90 (virado para cima)
+
+fuja([X,Y], 90, [X2,Y], turnleft):-
+    X>X2,
+    viraesquerda.
+    
+fuja([X,Y], 90, [X2,Y], turnright):-
+    X<X2,
+    viradireita.
+    
+fuja([X,Y], 90, [X,Y2], turnleft):-
+    Y>Y2,
+    mudasquerda.
+
+%para angulo=180 (virado para a esquerda)
+
+fuja([X,Y], 180, [X2,Y], turnleft):-
+    X<X2,
+    viraesquerda.
+    
+fuja([X,Y], 180, [X,Y2], turnright):-
+    Y<Y2,
+    viradireita.
+
+fuja([X,Y], 180, [X,Y2], turnleft):-
+    Y>Y2,
+    viraesquerda.
+    
+%para angulo=270 (virado para baixo)
+
+fuja([X,Y], 270, [X2,Y], turnleft):-
+    X<X2,
+    viraesquerda.
+    
+fuja([X,Y], 270, [X2,Y], turnright):-
+    X>X2,
+    viradireita.
+    
+fuja([X,Y], 270, [X,Y2], turnleft):-
+    Y<Y2,
+    viraesquerda.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 viraesquerda :- %virar esquerda
     orientacao(O),
