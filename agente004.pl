@@ -1,3 +1,13 @@
+%Agente004.pl
+%
+%Version 1.1
+
+%Grupo 4:
+%       Antonio Francelino.
+%       Aron Sales de Melo de Medeiros Monteiro.
+%       Bruna Mayumi Hori.
+%       Thiago Rodrigo de Oliveira Queiroz.
+%
 %  Some simple test agents.
 % 
 %  To define an agent within the navigate.pl scenario, define:
@@ -196,81 +206,81 @@ alvo:-
     retractall(ir(_)),
     assert(ir(Av)).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%funcao para calcular posicao, angulo, alvo, acao
+%fuja([X,Y], 0, [X2,Y], goforward):- %angulo=0
+%   X<X2,
+%   antes,
+%   local_agent.
 
-fuja([X,Y], 0, [X2,Y], goforward):- %angulo=0
-    X<X2,
-    antes,
-    local_agent.
+%fuja([X,Y], 90, [X,Y2], goforward):- %angulo=90
+%   Y<Y2,
+%   antes,
+%   local_agent.
 
-fuja([X,Y], 90, [X,Y2], goforward):- %angulo=90
-    Y<Y2,
-    antes,
-    local_agent.
+%fuja([X,Y], 180, [X2,Y], goforward):- %angulo=180
+%   X>X2,
+%   antes,
+%   local_agent.
 
-fuja([X,Y], 180, [X2,Y], goforward):- %angulo=180
-    X>X2,
-    antes,
-    local_agent.
-
-fuja([X,Y], 270, [X,Y2], goforward):- %angulo=270
-    Y>Y2,
-    antes,
-    local_agent.
+%fuja([X,Y], 270, [X,Y2], goforward):- %angulo=270
+%   Y>Y2,
+%   antes,
+%   local_agent.
 
 %para angulo=0 (virado para direita)
-fuja([X,Y], 0, [X2,Y], turnleft):-
-    X>X2,
-    viraesquerda.
+%fuja([X,Y], 0, [X2,Y], turnleft):-
+%   X>X2,
+%   viraesquerda.
 
-fuja([X,Y], 0, [X,Y2], turnright):-
-    Y>Y2,
-    viradireita.
+%fuja([X,Y], 0, [X,Y2], turnright):-
+%   Y>Y2,
+%   viradireita.
 
-fuja([X,Y], 0, [X,Y2], turnleft):-
-    Y<Y2,
-    viradireita.
+%fuja([X,Y], 0, [X,Y2], turnleft):-
+%   Y<Y2,
+%   viradireita.
 
 %para angulo=90 (virado para cima)
 
-fuja([X,Y], 90, [X2,Y], turnleft):-
-    X>X2,
-    viraesquerda.
+%fuja([X,Y], 90, [X2,Y], turnleft):-
+%   X>X2,
+%   viraesquerda.
     
-fuja([X,Y], 90, [X2,Y], turnright):-
-    X<X2,
-    viradireita.
+%fuja([X,Y], 90, [X2,Y], turnright):-
+%   X<X2,
+%   viradireita.
     
-fuja([X,Y], 90, [X,Y2], turnleft):-
-    Y>Y2,
-    mudasquerda.
+%fuja([X,Y], 90, [X,Y2], turnleft):-
+%   Y>Y2,
+%   viraesquerda
 
 %para angulo=180 (virado para a esquerda)
 
-fuja([X,Y], 180, [X2,Y], turnleft):-
-    X<X2,
-    viraesquerda.
+%fuja([X,Y], 180, [X2,Y], turnleft):-
+%   X<X2,
+%   viraesquerda.
     
-fuja([X,Y], 180, [X,Y2], turnright):-
-    Y<Y2,
-    viradireita.
+%fuja([X,Y], 180, [X,Y2], turnright):-
+%   Y<Y2,
+%   viradireita.
 
-fuja([X,Y], 180, [X,Y2], turnleft):-
-    Y>Y2,
-    viraesquerda.
+%fuja([X,Y], 180, [X,Y2], turnleft):-
+%   Y>Y2,
+%   viraesquerda.
     
 %para angulo=270 (virado para baixo)
 
-fuja([X,Y], 270, [X2,Y], turnleft):-
-    X<X2,
-    viraesquerda.
+%fuja([X,Y], 270, [X2,Y], turnleft):-
+%   X<X2,
+%   viraesquerda.
     
-fuja([X,Y], 270, [X2,Y], turnright):-
-    X>X2,
-    viradireita.
+%fuja([X,Y], 270, [X2,Y], turnright):-
+%   X>X2,
+%   viradireita.
     
-fuja([X,Y], 270, [X,Y2], turnleft):-
-    Y<Y2,
-    viraesquerda.
+%fuja([X,Y], 270, [X,Y2], turnleft):-
+%   Y<Y2,
+%   viraesquerda.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
