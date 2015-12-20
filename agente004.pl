@@ -1,3 +1,13 @@
+%Agente004.pl
+%
+%Version 1.1
+
+%Grupo 4:
+%       Antonio Francelino.
+%       Aron Sales de Melo de Medeiros Monteiro.
+%       Bruna Mayumi Hori.
+%       Thiago Rodrigo de Oliveira Queiroz.
+%
 %  Some simple test agents.
 % 
 %  To define an agent within the navigate.pl scenario, define:
@@ -34,28 +44,42 @@
 :- load_files([wumpus3]).
 :- dynamic([orientacao/1,
             posicao/2,
-            volta/1,
+            ouro/1,
+            quantidade_flecha/1,
+            ir/1,
+            estado_wumpus/1,
+            minha_frente/1,
             casas_seguras/1,
             casas_perigosas/1,
             casas_visitadas/1,
-            numero_giros/1)]. 
+            numero_giros/1]). 
 
         wumpusworld(pit3, 4). %tipo, tamanho
 
 init_agent:-
     retractall(orientacao(_)),
     retractall(posicao(_)),
+    retractall(quantidade_flecha(_)),
+    retractall(ouro(_)),
     retractall(volta(_)),
     retractall(casas_seguras(_)),
     retractall(casas_perigosas(_)),
     retractall(casas_visitadas(_)),
     retractall(numero_giros(_)),
+    retractall(minha_frente(_)),
+    retractall(ir(_)),
+    retractall(estado_wumpus(_)),
+    assert(estado_wumpus(vivo)),
+    assert(ir([])),
+    assert(ouro(no)),
+    assert(minha_frente([[2,1]])),
     assert(numero_giros(0)),
     assert(orientacao( 0 )),
     assert(posicao([1,1])),
     assert(volta( 0 )),
     assert(casas_seguras([])),
     assert(casas_perigosas([])),
+    assert(quantidade_flecha(1)),
     assert(casas_visitadas([[1,1]])).
 
 restart_agent:-
@@ -67,9 +91,9 @@ run_agent(P,Acao):-
     casas_seguras( X ),
     write('Casas Seguras: '),
     writeln( X ),
-    casas_perigosas( Z ),
+    casas_perigosas( Perig ),
     write('Casas Perigosas: '),
-    writeln( Z ),
+    writeln( Perig ),
     casas_visitadas(I),
     write('Casas Visitadas: '),
     writeln(I),
@@ -79,53 +103,187 @@ run_agent(P,Acao):-
     orientacao(O),
     write('Orientacao: '),
     writeln(O),
-    %%%%%%%%%%%%%%%%%%%%%% 
-    verificar(P),
-    agente_movimento(P,Acao),
-    visitadas.
-    
-ouro([_,_,yes,_,_], grab).
+    %minha_frente(Mf),
+    %write('A casa a minha frente e: '),
+    %writeln(Mf),
+    ir(Av),
+    write('Meu alvo atual eh a casa: '),
+    writeln(Av),
+    quantidade_flecha(Qf),
+    write('Quantidade de flechas: '),
+    writeln(Qf),
+    estado_wumpus(Ew),
+    write('O wumpus esta: '),
+    writeln(Ew),
+    agente_movimento(P,Acao).
+    %front_of_me.
 
 girei:-
     numero_giros(Ng),
     Ng1 is Ng+1,
     retractall(numero_giros(_)),
     assert(numero_giros(Ng1)).
-    
-agente_movimento([no,no,no,no,no],goforward):-
-    local_agent.
 
-agente_movimento([_,_,_,_,_], goforward):-
+agente_movimento([_,_,yes,_,_], grab):-
+    retractall(ouro(_)),
+    assert(ouro(yes)),
+    write('Estou com o ouro!!!! :D').
+
+agente_movimento(_,climb):-
+    posicao([1,1]),
+    ouro(yes).
+
+agente_movimento([yes,_,_,_,_], shoot):-
+    quantidade_flecha(1),
+    flecha.
+
+agente_movimento([_,_,_,_,no], climb):-%precisa de ajustes
+    posicao([1,1]),
+    quantidade_flecha(0),
+    estado_wumpus(vivo),
+    write('Fugindoooooo!!!!').
+
+agente_movimento([_,no,_,_,yes], goforward):-
+    local_agent,
+    wumpus,
+    write('Wumpus morreu!!!!').
+
+%agente_movimento([_,yes_,_,yes], turnleft):-
+%    girei,
+%    viraesquerda.
+
+agente_movimento(_, goforward):-
     numero_giros(Ng),
     Ng==2,
     retractall(numero_giros(_)),
     assert(numero_giros(0)),
     local_agent.
 
-agente_movimento([no,yes,no,no,no], turnleft):-
+agente_movimento([yes,no,no,no,no], turnleft):-
+    estado_wumpus(vivo),
     girei,
+    perigosas_verificar,
+    viraesquerda.
+agente_movimento([yes,no,no,no,no], goforward):-
+    estado_wumpus(morto),
+    local_agent.
+
+agente_movimento([_,yes,no,no,no], turnleft):-
+    girei,
+    perigosas_verificar,
     viraesquerda.
 
-agente_movimento([yes,_,_,_,_], turnleft):-
+agente_movimento([no,no,_,yes,_], turnright):-
     girei,
-    viraesquerda.
-   %senti_wumpus([Acao|S]),
-   %retractall(senti_wumpus(_)),
-   %assert(senti_wumpus(S)).
-
-agente_movimento([_,_,_,yes,_], turnright):- %ao esbarrar mudará sua direcao para direita
     viradireita.
-    %esbarrada([Acao|S]),
-    %retractall(esbarrada(_)),
-    %assert(esbarrada(S)).
 
-%flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
-%    flecha(X),
-%    X > 0,
-%    Z is X - 1,
-%    retractall(flecha(_)),
-%    assert(flecha(Z)).
-%
+agente_movimento([_,no,_,yes,_], turnright):-
+    estado_wumpus(morto),
+    girei,
+    viradireita.
+
+agente_movimento([no,no,no,no,no],goforward):-
+    verificar,
+    local_agent,
+    visitadas,
+    retirar_seguras,
+    alvo.
+
+flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
+    quantidade_flecha(X),
+    X > 0,
+    Z is X - 1,
+    retractall(quantidade_flecha(_)),
+    assert(quantidade_flecha(Z)).
+
+wumpus:-
+    retractall(estado_wumpus(_)),
+    assert(estado_wumpus(morto)).
+
+
+alvo:-
+    casas_seguras([Av|_]),
+    retractall(ir(_)),
+    assert(ir(Av)).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%funcao para calcular posicao, angulo, alvo, acao
+%fuja([X,Y], 0, [X2,Y], goforward):- %angulo=0
+%   X<X2,
+%   antes,
+%   local_agent.
+
+%fuja([X,Y], 90, [X,Y2], goforward):- %angulo=90
+%   Y<Y2,
+%   antes,
+%   local_agent.
+
+%fuja([X,Y], 180, [X2,Y], goforward):- %angulo=180
+%   X>X2,
+%   antes,
+%   local_agent.
+
+%fuja([X,Y], 270, [X,Y2], goforward):- %angulo=270
+%   Y>Y2,
+%   antes,
+%   local_agent.
+
+%para angulo=0 (virado para direita)
+%fuja([X,Y], 0, [X2,Y], turnleft):-
+%   X>X2,
+%   viraesquerda.
+
+%fuja([X,Y], 0, [X,Y2], turnright):-
+%   Y>Y2,
+%   viradireita.
+
+%fuja([X,Y], 0, [X,Y2], turnleft):-
+%   Y<Y2,
+%   viradireita.
+
+%para angulo=90 (virado para cima)
+
+%fuja([X,Y], 90, [X2,Y], turnleft):-
+%   X>X2,
+%   viraesquerda.
+    
+%fuja([X,Y], 90, [X2,Y], turnright):-
+%   X<X2,
+%   viradireita.
+    
+%fuja([X,Y], 90, [X,Y2], turnleft):-
+%   Y>Y2,
+%   viraesquerda
+
+%para angulo=180 (virado para a esquerda)
+
+%fuja([X,Y], 180, [X2,Y], turnleft):-
+%   X<X2,
+%   viraesquerda.
+    
+%fuja([X,Y], 180, [X,Y2], turnright):-
+%   Y<Y2,
+%   viradireita.
+
+%fuja([X,Y], 180, [X,Y2], turnleft):-
+%   Y>Y2,
+%   viraesquerda.
+    
+%para angulo=270 (virado para baixo)
+
+%fuja([X,Y], 270, [X2,Y], turnleft):-
+%   X<X2,
+%   viraesquerda.
+    
+%fuja([X,Y], 270, [X2,Y], turnright):-
+%   X>X2,
+%   viradireita.
+    
+%fuja([X,Y], 270, [X,Y2], turnleft):-
+%   Y<Y2,
+%   viraesquerda.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 viraesquerda :- %virar esquerda
     orientacao(O),
     B is O + 90,
@@ -133,9 +291,9 @@ viraesquerda :- %virar esquerda
     retractall(orientacao(_)),
     assert(orientacao(C)).
     
-virad :- %virar direita
-    orientacao(A),
-    B is A - 90,
+viradireita :- %virar direita
+    orientacao(O),
+    B is O - 90,
     C is B mod 360,
     retractall(orientacao(_)),
     assert(orientacao(C)).
@@ -144,34 +302,48 @@ local_agent:-
     orientacao(0),
     posicao([X,Y]),
     X < 4,
-    retractall(posicao(_,_)),
-    assert(posicao(Z,Y)).
+    Z is X+1,
+    retractall(posicao(_)),
+    assert(posicao([Z,Y])).
     
-
 local_agent:-
     orientacao(90),
     posicao([X,Y]),
     Y < 4,
-    retractall(posicao(_,_)),
-    assert(posicao(X,Z)).
-    
-local_agent(goforward):- 
-    orientacao(180),
-    posicao(X,Y),
-    Z is X - 1,
-    X  >  1,
-    retractall(posicao(_,_)),
-    assert(posicao(Z,Y)).
+    Z is Y+1,
+    retractall(posicao(_)),
+    assert(posicao([X,Z])).
     
 local_agent:- 
     orientacao(180),
     posicao([X,Y]),
     X > 1,
-    Z is X-1,
+    Z is X - 1,
     retractall(posicao(_)),
     assert(posicao([Z,Y])).
+local_agent:- 
+    orientacao(270),
+    posicao([X,Y]),
+    Y > 1,
+    Z is Y-1,
+    retractall(posicao(_)),
+    assert(posicao([X,Z])).
 
-verificar([no,no,_,_,_]):-
+%caso a funcao nao tenha o que incrementar ou decrementar%
+local_agent:-
+    orientacao(_),
+    posicao([X,Y]),
+    X==1,
+    retractall(posicao(_)),
+    assert(posicao([X,Y])).
+local_agent:-
+    orientacao(_),
+    posicao([X,Y]),
+    X==4,
+    retractall(posicao(_)),
+    assert(posicao([X,Y])).
+
+verificar:-
     frente,
     cima,
     tras,
@@ -221,6 +393,46 @@ baixo:-
     assert(casas_seguras(C)).
 baixo.
 
+front_of_me:-
+    orientacao(0),
+    posicao([X,Y]),
+    X1 is X+1,
+    X1 < 4,
+    retractall(minha_frente(_)),
+    assert(minha_frente([X1,Y])).
+front_of_me:-
+    orientacao(90),
+    posicao([X,Y]),
+    Y1 is Y+1,
+    Y1 < 4,
+    retractall(minha_frente(_)),
+    assert(minha_frente([X,Y1])).
+front_of_me:-
+    orientacao(180),
+    posicao([X,Y]),
+    X1 is X-1,
+    X1 > 1, 
+    retractall(minha_frente(_)),
+    assert(minha_frente([X1,Y])).
+front_of_me:-
+    orientacao(270),
+    posicao([X,Y]),
+    Y1 is Y-1,
+    Y1 > 1,
+    retractall(minha_frente(_)),
+    assert(minha_frente([X,Y1])).
+
+front_of_me:-
+    posicao([X,Y]),
+    X==4,
+    retractall(minha_frente(_)),
+    assert(minha_frente([X,Y])).
+
+front_of_me:-
+    posicao([X,Y]),
+    Y==4,
+    retractall(minha_frente(_)),
+    assert(minha_frente([X,Y])).
 
 visitadas:-
    casas_visitadas(A),
@@ -230,19 +442,64 @@ visitadas:-
    retractall(casas_visitadas(_)),
    assert(casas_visitadas(B)).
 
-%perigosas_S:-
-%   casas_perigosas(A),
-%   posicao(X,Y),
-%   delete(A,[X,Y],C),
-%   append(C,[[X,Y]],B),
-%   retractall(casas_perigosas(_)),
-%   assert(casas_perigosas(B)).
+retirar_seguras:-
+    casas_seguras(A),
+    posicao([X,Y]),
+    delete(A,[X,Y],D),  
+    delete(D,[1,1],C),
+    retractall(casas_seguras(_)),
+    assert(casas_seguras(C)).
 
-%perigosas_B:-
-%   casas_perigosas(A),
-%   posicao(X,Y),
-%   delete(A,[X,Y],C),
-%   append(C,[[X,Y]],B),
-%   retractall(casas_perigosas(_)),
-%   assert(casas_perigosas(B)).
- 
+perigosas_verificar:-
+    perigosas_frente,
+    perigosas_cima,
+    perigosas_tras,
+    perigosas_baixo.
+
+perigosas_frente:-
+    casas_perigosas(Perig),
+    posicao([X,Y]),
+    X < 4,
+    Z is X+1,
+    not(member([Z,Y], Perig)),
+    append(Perig,[[Z,Y]],C),
+    retractall(casas_perigosas(_)),
+    assert(casas_perigosas(C)).
+
+perigosas_frente.
+
+perigosas_cima:-
+    casas_perigosas(Perig),
+    posicao([X,Y]),
+    Y < 4,
+    Z is Y+1,
+    not(member([X,Z], Perig)),
+    append(Perig,[[X,Z]],C),
+    retractall(casas_perigosas(_)),
+    assert(casas_perigosas(C)).
+
+perigosas_cima.
+
+perigosas_tras:-
+    casas_perigosas(Perig),
+    posicao([X,Y]),
+    X > 1,
+    Z is X-1,
+    not(member([Z,Y], Perig)),
+    append(Perig,[[Z,Y]],C),
+    retractall(casas_perigosas(_)),
+    assert(casas_perigosas(C)).
+
+perigosas_tras.
+
+perigosas_baixo:-
+    casas_perigosas(Perig),
+    posicao([X,Y]),
+    Y > 1,
+    Z is Y-1,
+    not(member([X,Z], Perig)),
+    append(Perig,[[X,Z]],C),
+    retractall(casas_perigosas(_)),
+    assert(casas_perigosas(C)).
+perigosas_baixo.
+
