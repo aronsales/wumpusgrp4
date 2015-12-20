@@ -106,6 +106,10 @@ agente_movimento([_,_,yes,_,_], grab):-
     retractall(ouro(_)),
     assert(ouro(yes)).
 
+agente_movimento(_,climb):-
+    posicao([1,1]),
+    ouro(yes).
+
 agente_movimento(_, goforward):-
     numero_giros(Ng),
     Ng==2,
