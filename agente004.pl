@@ -128,6 +128,7 @@ agente_movimento([yes,_,_,_,_], shoot):-
 
 agente_movimento([_,_,_,_,no], climb):-     %precisa de ajustes
     quantidade_flecha(0),
+    estado_wumpus(vivo),
     write('Fugindoooooo!!!!').
 
 agente_movimento([_,no,_,_,yes], goforward):-
@@ -172,7 +173,6 @@ flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
 
 wumpus:-
     estado_wumpus(Ew),
-    Ew==vivo,
     retractall(estado_wumpus(_)),
     assert(estado_wumpus(morto)).
 
