@@ -117,8 +117,7 @@ agente_movimento(_,climb):-
 agente_movimento([yes,_,_,_,_], shoot):-
     flecha.
 
-agente_movimento([_,_,_,_,yes], climb):-
-    posicao([1,1]),
+agente_movimento([_,no,_,_,yes], goforward):-
     write('wumpus morreu!!!!!!!!!!!!   o/').
 
 agente_movimento(_, goforward):-
@@ -137,7 +136,12 @@ agente_movimento([no,yes,no,no,no], turnleft):-
     girei,
     perigosas_verificar,
     viraesquerda.
-    
+
+agente_movimento([no,no,_,yes,_], turnleft):-
+    girei,
+    perigosas_verificar,
+    viraesquerda.
+
 agente_movimento([no,no,no,no,no],goforward):-
     verificar,
     local_agent,
