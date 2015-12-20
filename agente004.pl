@@ -93,9 +93,9 @@ run_agent(P,Acao):-
     orientacao(O),
     write('Orientacao: '),
     writeln(O),
-    minha_frente(Mf),
-    write('A casa a minha frente e: '),
-    writeln(Mf),
+    %minha_frente(Mf),
+    %write('A casa a minha frente e: '),
+    %writeln(Mf),
     ir(Av),
     write('Meu alvo atual eh a casa: '),
     writeln(Av),
@@ -105,8 +105,8 @@ run_agent(P,Acao):-
     estado_wumpus(Ew),
     write('O wumpus esta: '),
     writeln(Ew),
-    agente_movimento(P,Acao),
-    front_of_me.
+    agente_movimento(P,Acao).
+    %front_of_me.
 
 girei:-
     numero_giros(Ng),
@@ -133,12 +133,13 @@ agente_movimento([_,_,_,_,no], climb):-%precisa de ajustes
     write('Fugindoooooo!!!!').
 
 agente_movimento([_,no,_,_,yes], goforward):-
+    local_agent,
     wumpus,
     write('Wumpus morreu!!!!').
 
-agente_movimento([_,yes_,_,yes], turnleft):-
-    girei,
-    viraesquerda.
+%agente_movimento([_,yes_,_,yes], turnleft):-
+%    girei,
+%    viraesquerda.
 
 agente_movimento(_, goforward):-
     numero_giros(Ng),
@@ -148,19 +149,27 @@ agente_movimento(_, goforward):-
     local_agent.
 
 agente_movimento([yes,no,no,no,no], turnleft):-
+    estado_wumpus(vivo),
+    girei,
+    perigosas_verificar,
+    viraesquerda.
+agente_movimento([yes,no,no,no,no], goforward):-
+    estado_wumpus(morto),
+    local_agent.
+
+agente_movimento([_,yes,no,no,no], turnleft):-
     girei,
     perigosas_verificar,
     viraesquerda.
 
-agente_movimento([no,yes,no,no,no], turnleft):-
+agente_movimento([no,no,_,yes,_], turnright):-
     girei,
-    perigosas_verificar,
-    viraesquerda.
+    viradireita.
 
-agente_movimento([no,no,_,yes,_], turnleft):-
+agente_movimento([_,no,_,yes,_], turnright):-
+    estado_wumpus(morto),
     girei,
-    perigosas_verificar,
-    viraesquerda.
+    viradireita.
 
 agente_movimento([no,no,no,no,no],goforward):-
     verificar,
@@ -310,6 +319,33 @@ local_agent:-
     retractall(posicao(_)),
     assert(posicao([X,Z])).
 
+%caso a funcao nao tenha o que incrementar ou decrementar%
+local_agent:-
+    orientacao(0),
+    posicao([X,Y]),
+    X==1,
+    retractall(posicao(_)),
+    assert(posicao([X,Y])).
+local_agent:-
+    orientacao(90),
+    posicao([X,Y]),
+    X==1,
+    retractall(posicao(_)),
+    assert(posicao([X,Y])).
+local_agent:-
+    orientacao(180),
+    posicao([X,Y]),
+    X==1,
+    retractall(posicao(_)),
+    assert(posicao([X,Y])).
+local_agent:-
+    orientacao(270),
+    posicao([X,Y]),
+    X==1,
+    retractall(posicao(_)),
+    assert(posicao([X,Y])).
+
+
 verificar:-
     frente,
     cima,
@@ -371,20 +407,35 @@ front_of_me:-
     orientacao(90),
     posicao([X,Y]),
     Y1 is Y+1,
+    Y1 < 4,
     retractall(minha_frente(_)),
     assert(minha_frente([X,Y1])).
 front_of_me:-
     orientacao(180),
     posicao([X,Y]),
     X1 is X-1,
+    X1 > 1, 
     retractall(minha_frente(_)),
     assert(minha_frente([X1,Y])).
 front_of_me:-
     orientacao(270),
     posicao([X,Y]),
     Y1 is Y-1,
+    Y1 > 1,
     retractall(minha_frente(_)),
     assert(minha_frente([X,Y1])).
+
+front_of_me:-
+    posicao([X,_]),
+    X==4,
+    retractall(minha_frente(_)),
+    assert(minha_frente([0,0])).
+
+front_of_me:-
+    posicao([_,Y]),
+    Y==4,
+    retractall(minha_frente(_)),
+    assert(minha_frente([0,0])).
 
 visitadas:-
    casas_visitadas(A),
