@@ -126,7 +126,8 @@ agente_movimento(_,climb):-
 agente_movimento([yes,_,_,_,_], shoot):-
     flecha.
 
-agente_movimento([_,_,_,_,no], climb):-     %precisa de ajustes
+agente_movimento([_,_,_,_,no], climb):-%precisa de ajustes
+    posicao([1,1]),
     quantidade_flecha(0),
     estado_wumpus(vivo),
     write('Fugindoooooo!!!!').
@@ -362,8 +363,8 @@ baixo.
 front_of_me:-
     orientacao(0),
     posicao([X,Y]),
-    X < 4,
     X1 is X+1,
+    X1 < 4,
     retractall(minha_frente(_)),
     assert(minha_frente([X1,Y])).
 front_of_me:-
