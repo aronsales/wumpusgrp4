@@ -35,6 +35,7 @@
 :- dynamic([orientacao/1,
             posicao/2,
             ouro/1,
+            flecha/1,
             ir/1,
             minha_frente/1,
             casas_seguras/1,
@@ -47,6 +48,7 @@
 init_agent:-
     retractall(orientacao(_)),
     retractall(posicao(_)),
+    retractall(flecha(_)),
     retractall(ouro(_)),
     retractall(volta(_)),
     retractall(casas_seguras(_)),
@@ -64,6 +66,7 @@ init_agent:-
     assert(volta( 0 )),
     assert(casas_seguras([])),
     assert(casas_perigosas([])),
+    assert(flecha(1)),
     assert(casas_visitadas([[1,1]])).
 
 restart_agent:-
@@ -104,11 +107,19 @@ girei:-
 
 agente_movimento([_,_,yes,_,_], grab):-
     retractall(ouro(_)),
-    assert(ouro(yes)).
+    assert(ouro(yes)),
+    write('Estou com o ouro!!!!     o/').
 
 agente_movimento(_,climb):-
     posicao([1,1]),
     ouro(yes).
+
+agente_movimento([yes,_,_,_,_], shoot):-
+    flecha.
+
+agente_movimento([_,_,_,_,yes], climb):-
+    posicao([1,1]),
+    write('wumpus morreu!!!!!!!!!!!!   o/').
 
 agente_movimento(_, goforward):-
     numero_giros(Ng),
@@ -134,13 +145,13 @@ agente_movimento([no,no,no,no,no],goforward):-
     retirar_seguras,
     alvo.
 
-%flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
-%    flecha(X),
-%    X > 0,
-%    Z is X - 1,
-%    retractall(flecha(_)),
-%    assert(flecha(Z)).
-%
+flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
+    flecha(X),
+    X > 0,
+    Z is X - 1,
+    retractall(flecha(_)),
+    assert(flecha(Z)).
+
 
 alvo:-
     casas_seguras([Av|_]),
