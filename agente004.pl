@@ -124,6 +124,7 @@ agente_movimento(_,climb):-
     ouro(yes).
 
 agente_movimento([yes,_,_,_,_], shoot):-
+    quantidade_flecha(1),
     flecha.
 
 agente_movimento([_,_,_,_,no], climb):-%precisa de ajustes
@@ -321,30 +322,17 @@ local_agent:-
 
 %caso a funcao nao tenha o que incrementar ou decrementar%
 local_agent:-
-    orientacao(0),
+    orientacao(_),
     posicao([X,Y]),
     X==1,
     retractall(posicao(_)),
     assert(posicao([X,Y])).
 local_agent:-
-    orientacao(90),
+    orientacao(_),
     posicao([X,Y]),
-    X==1,
+    X==4,
     retractall(posicao(_)),
     assert(posicao([X,Y])).
-local_agent:-
-    orientacao(180),
-    posicao([X,Y]),
-    X==1,
-    retractall(posicao(_)),
-    assert(posicao([X,Y])).
-local_agent:-
-    orientacao(270),
-    posicao([X,Y]),
-    X==1,
-    retractall(posicao(_)),
-    assert(posicao([X,Y])).
-
 
 verificar:-
     frente,
@@ -426,16 +414,16 @@ front_of_me:-
     assert(minha_frente([X,Y1])).
 
 front_of_me:-
-    posicao([X,_]),
+    posicao([X,Y]),
     X==4,
     retractall(minha_frente(_)),
-    assert(minha_frente([0,0])).
+    assert(minha_frente([X,Y])).
 
 front_of_me:-
-    posicao([_,Y]),
+    posicao([X,Y]),
     Y==4,
     retractall(minha_frente(_)),
-    assert(minha_frente([0,0])).
+    assert(minha_frente([X,Y])).
 
 visitadas:-
    casas_visitadas(A),
