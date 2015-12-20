@@ -135,6 +135,10 @@ agente_movimento([_,no,_,_,yes], goforward):-
     wumpus,
     write('Wumpus morreu!!!!').
 
+agente_movimento([_,yes_,_,yes], turnleft):-
+    girei,
+    viraesquerda.
+
 agente_movimento(_, goforward):-
     numero_giros(Ng),
     Ng==2,
@@ -172,7 +176,6 @@ flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
     assert(quantidade_flecha(Z)).
 
 wumpus:-
-    estado_wumpus(Ew),
     retractall(estado_wumpus(_)),
     assert(estado_wumpus(morto)).
 
