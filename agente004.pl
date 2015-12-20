@@ -34,7 +34,7 @@
 :- load_files([wumpus3]).
 :- dynamic([orientacao/1,
             posicao/2,
-            volta/1,
+            ir/1,
             minha_frente/1,
             casas_seguras/1,
             casas_perigosas/1,
@@ -52,6 +52,8 @@ init_agent:-
     retractall(casas_visitadas(_)),
     retractall(numero_giros(_)),
     retractall(minha_frente(_)),
+    retractall(ir(_)),
+    assert(ir([])),
     assert(minha_frente([[2,1]])),
     assert(numero_giros(0)),
     assert(orientacao( 0 )),
@@ -85,7 +87,11 @@ run_agent(P,Acao):-
     minha_frente(Mf),
     write('A casa a minha frente e: '),
     writeln(Mf),
-    agente_movimento(P,Acao).
+    ir(Av),
+    write('Meu alvo atual eh a casa: '),
+    writeln(Av),
+    agente_movimento(P,Acao),
+    front_of_me.
 
 girei:-
     numero_giros(Ng),
@@ -102,17 +108,20 @@ agente_movimento(_, goforward):-
 
 agente_movimento([yes,no,no,no,no], turnleft):-
     girei,
-    perigosas_verificar.
+    perigosas_verificar,
+    viraesquerda.
 
 agente_movimento([no,yes,no,no,no], turnleft):-
     girei,
-    perigosas_verificar.
+    perigosas_verificar,
+    viraesquerda.
     
 agente_movimento([no,no,no,no,no],goforward):-
-    local_agent,
     verificar,
+    local_agent,
     visitadas,
-    retirar_seguras.
+    retirar_seguras,
+    alvo.
 
 %flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
 %    flecha(X),
@@ -121,6 +130,12 @@ agente_movimento([no,no,no,no,no],goforward):-
 %    retractall(flecha(_)),
 %    assert(flecha(Z)).
 %
+
+alvo:-
+    casas_seguras([Av|_]),
+    retractall(ir(_)),
+    assert(ir(Av)).
+
 viraesquerda :- %virar esquerda
     orientacao(O),
     B is O + 90,
