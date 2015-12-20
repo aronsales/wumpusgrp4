@@ -35,8 +35,9 @@
 :- dynamic([orientacao/1,
             posicao/2,
             ouro/1,
-            flecha/1,
+            quantidade_flecha/1,
             ir/1,
+            estado_wumpus/1,
             minha_frente/1,
             casas_seguras/1,
             casas_perigosas/1,
@@ -48,7 +49,7 @@
 init_agent:-
     retractall(orientacao(_)),
     retractall(posicao(_)),
-    retractall(flecha(_)),
+    retractall(quantidade_flecha(_)),
     retractall(ouro(_)),
     retractall(volta(_)),
     retractall(casas_seguras(_)),
@@ -57,6 +58,8 @@ init_agent:-
     retractall(numero_giros(_)),
     retractall(minha_frente(_)),
     retractall(ir(_)),
+    retractall(estado_wumpus(_)),
+    assert(estado_wumpus(vivo)),
     assert(ir([])),
     assert(ouro(no)),
     assert(minha_frente([[2,1]])),
@@ -66,7 +69,7 @@ init_agent:-
     assert(volta( 0 )),
     assert(casas_seguras([])),
     assert(casas_perigosas([])),
-    assert(flecha(1)),
+    assert(quantidade_flecha(1)),
     assert(casas_visitadas([[1,1]])).
 
 restart_agent:-
@@ -96,6 +99,12 @@ run_agent(P,Acao):-
     ir(Av),
     write('Meu alvo atual eh a casa: '),
     writeln(Av),
+    quantidade_flecha(Qf),
+    write('Quantidade de flechas: '),
+    writeln(Qf),
+    estado_wumpus(Ew),
+    write('O wumpus esta: '),
+    writeln(Ew),
     agente_movimento(P,Acao),
     front_of_me.
 
@@ -108,7 +117,7 @@ girei:-
 agente_movimento([_,_,yes,_,_], grab):-
     retractall(ouro(_)),
     assert(ouro(yes)),
-    write('Estou com o ouro!!!!     o/').
+    write('Estou com o ouro!!!! :D').
 
 agente_movimento(_,climb):-
     posicao([1,1]),
@@ -118,11 +127,12 @@ agente_movimento([yes,_,_,_,_], shoot):-
     flecha.
 
 agente_movimento([_,_,_,_,no], climb):-     %precisa de ajustes
-    flecha,
-    write('fugindoooooo!!!!     D=').
+    quantidade_flecha(0),
+    write('Fugindoooooo!!!!').
 
 agente_movimento([_,no,_,_,yes], goforward):-
-    write('wumpus morreu!!!!!!!!!!!!   o/').
+    wumpus,
+    write('Wumpus morreu!!!!').
 
 agente_movimento(_, goforward):-
     numero_giros(Ng),
@@ -154,11 +164,17 @@ agente_movimento([no,no,no,no,no],goforward):-
     alvo.
 
 flecha:-  % Depois de disparar a flecha, o agente decrementa 1 flecha.
-    flecha(X),
+    quantidade_flecha(X),
     X > 0,
     Z is X - 1,
-    retractall(flecha(_)),
-    assert(flecha(Z)).
+    retractall(quantidade_flecha(_)),
+    assert(quantidade_flecha(Z)).
+
+wumpus:-
+    estado_wumpus(Ew),
+    Ew==vivo,
+    retractall(estado_wumpus(_)),
+    assert(estado_wumpus(morto)).
 
 
 alvo:-
